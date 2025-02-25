@@ -41,11 +41,28 @@
 
         <div>
             <x-input-label for="bio" :value="__('Bio')" />
-            <textarea  id="bio" name="bio" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('bio', $user->bio)" required autofocus autocomplete="bio"></textarea>
+            <div id="bio" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-400 dark:border-gray-600 focus:ring-opacity-50">
+                {!! old('bio', $user->bio) !!}
+            </div>
+            <input type="hidden" id="bio_content" name="bio" value="{{ old('bio', $user->bio) }}">
             <x-input-error class="mt-2" :messages="$errors->get('bio')" />
         </div>
-
         <div>
+        <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+        <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+        <script>
+            var quill = new Quill('#bio', {
+                theme: 'snow'
+            });
+            quill.on('text-change', function(delta, oldDelta, source) {
+                document.getElementById('bio_content').value = quill.root.innerHTML;
+            });
+             quill.setContents(<?php echo json_encode(old('bio', $user->bio)); ?>);
+        </script>
+        </div>
+        <div>
+
+
             <x-input-label for="completed_projects" :value="__('Completed Projects')" />
             <x-text-input id="completed_projects" name="completed_projects" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('completed_projects', $user->completed_projects)" required autofocus autocomplete="completed_projects"/>
             <x-input-error class="mt-2" :messages="$errors->get('completed_projects')" />

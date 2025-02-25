@@ -13,14 +13,54 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
 
+
+        <x-input-label for="name" :value="__('Name')" />
+        <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autocomplete="name" />
+        <x-input-error class="mt-2" :messages="$errors->get('name')" />
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" :value="old('name', $user->name)" required autofocus autocomplete="name" />
-            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+            <x-input-label for="github_link" :value="__('GitHub Link')" />
+            <x-text-input id="github_link" name="github_link" type="text" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('github_link', $user->github_link)" required autofocus autocomplete="github_link" />
+            <x-input-error class="mt-2" :messages="$errors->get('github_link')" />
+        </div>
+
+        <div>
+            <x-input-label for="phone_number" :value="__('Phone Number')" />
+            <x-text-input id="phone_number" name="phone_number" type="text" class="mt-1 block w-full" :value="old('phone_number', $user->phone_number)" required autofocus autocomplete="phone_number" />
+            <x-input-error class="mt-2" :messages="$errors->get('phone_number')" />
+        </div>
+
+        <div>
+            <x-input-label for="technical_skills" :value="__('Technical Skills')" />
+            <x-text-input id="technical_skills" name="technical_skills" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('technical_skills', $user->technical_skills)" required autofocus autocomplete="technical_skills"/>
+            <x-input-error class="mt-2" :messages="$errors->get('technical_skills')" />
+        </div>
+
+        <div>
+            <x-input-label for="bio" :value="__('Bio')" />
+            <textarea  id="bio" name="bio" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('bio', $user->bio)" required autofocus autocomplete="bio"></textarea>
+            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+        </div>
+
+        <div>
+            <x-input-label for="completed_projects" :value="__('Completed Projects')" />
+            <x-text-input id="completed_projects" name="completed_projects" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('completed_projects', $user->completed_projects)" required autofocus autocomplete="completed_projects"/>
+            <x-input-error class="mt-2" :messages="$errors->get('completed_projects')" />
+        </div>
+
+        <div>
+            <x-input-label for="certifications" :value="__('Certifications')" />
+            <x-text-input id="certifications" name="certifications" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('certifications', $user->certifications)" required autofocus autocomplete="certifications"/>
+            <x-input-error class="mt-2" :messages="$errors->get('certifications')" />
+        </div>
+
+        <div>
+            <x-input-label for="photo" :value="__('Photo')"  />
+            <input type="file" id="photo" name="photo" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('photo', $user->photo)" required autofocus autocomplete="photo" />
+            <x-input-error class="mt-2" :messages="$errors->get('photo')" />
         </div>
 
         <div>

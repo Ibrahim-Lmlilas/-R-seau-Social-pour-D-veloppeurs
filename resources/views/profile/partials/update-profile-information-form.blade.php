@@ -73,7 +73,7 @@
             <x-text-input id="certifications" name="certifications" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('certifications', $user->certifications)" required autofocus autocomplete="certifications"/>
             <x-input-error class="mt-2" :messages="$errors->get('certifications')" />
         </div>
-
+        <img src="{{asset('storege/'.$user->photo)}}" alt="">
         <div>
             <x-input-label for="photo" :value="__('Photo')"  />
             <input type="file" id="photo" name="photo" class="mt-1 block w-full rounded-md shadow-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600 focus:ring-opacity-50" :value="old('photo', $user->photo)" required autofocus autocomplete="photo" />

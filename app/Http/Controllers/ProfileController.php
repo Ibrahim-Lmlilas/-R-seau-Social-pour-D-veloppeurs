@@ -12,9 +12,8 @@ use Illuminate\View\View;
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile form.
+     * Display the user's profile.
      */
-
     public function index(Request $request): View
     {
         return view('profile.index', [
@@ -22,6 +21,9 @@ class ProfileController extends Controller
         ]);
     }
 
+    /**
+     * Display the user's profile editing form.
+     */
     public function edit(Request $request): View
     {
         return view('profile.edit', [
@@ -37,7 +39,7 @@ class ProfileController extends Controller
         $request->user()->fill($request->validated());
 
         if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('public/photos');
+            $path = $request->file('photo')->store('photos', 'public');
             $request->user()->photo = $path;
         }
 
@@ -69,17 +71,17 @@ class ProfileController extends Controller
             $request->user()->email_verified_at = null;
         }
 
-        $request->user()->save();
+         $request->user()->save();
 
         return Redirect::route('profile.edit');
     }
 
-    /**
+     /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse
     {
-        $request->validateWithBag('userDeletion', [
+         $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 

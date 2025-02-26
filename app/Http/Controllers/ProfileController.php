@@ -8,21 +8,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
     /**
-     * Display the user's profile.
-     */
-    public function index(Request $request): View
-    {
-        return view('profile.index', [
-            'user' => $request->user(),
-        ]);
-    }
-
-    /**
-     * Display the user's profile editing form.
+     * Display the user's profile form.
      */
     public function edit(Request $request): View
     {
@@ -36,52 +27,36 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $user = $request->user();
+        $validatedData = $request->validated();
 
-        if ($request->hasFile('photo')) {
-            $path = $request->file('photo')->store('photos', 'public');
-            $request->user()->photo = $path;
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('profile_images', 'public');
+            $validatedData['image'] = $imagePath;
         }
 
-        if ($request->has('phone_number')) {
-            $request->user()->phone_number = $request->input('phone_number');
+        if ($request->hasFile('banner')) {
+            $imagePath = $request->file('banner')->store('banner', 'public');
+            $validatedData['banner'] = $imagePath;
         }
 
-        if ($request->has('technical_skills')) {
-            $request->user()->technical_skills = $request->input('technical_skills');
+        $user->fill($validatedData);
+
+        if ($user->isDirty('email')) {
+            $user->email_verified_at = null;
         }
 
-        if ($request->has('bio')) {
-            $request->user()->bio = $request->input('bio');
-        }
+        $user->save();
 
-        if ($request->has('completed_projects')) {
-            $request->user()->completed_projects = $request->input('completed_projects');
-        }
-
-        if ($request->has('certifications')) {
-            $request->user()->certifications = $request->input('certifications');
-        }
-
-        if ($request->has('github_link')) {
-            $request->user()->github_link = $request->input('github_link');
-        }
-
-        if ($request->user()->isDirty('email')) {
-            $request->user()->email_verified_at = null;
-        }
-
-         $request->user()->save();
-
-        return Redirect::route('profile.edit');
+        return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
-     /**
+    /**
      * Delete the user's account.
      */
     public function destroy(Request $request): RedirectResponse
     {
-         $request->validateWithBag('userDeletion', [
+        $request->validateWithBag('userDeletion', [
             'password' => ['required', 'current_password'],
         ]);
 

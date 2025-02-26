@@ -25,13 +25,15 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'phone_number' => ['required', 'string', 'max:20'],
-            'technical_skills' => ['required', 'string'],
-            'bio' => ['required', 'string', 'max:1000'],
-            'completed_projects' => ['required', 'string'],
-            'certifications' => ['required', 'string'],
-            'photo' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
-            'github_link' => ['nullable', 'string', 'max:1155'],
+            'skills' => ['nullable', 'string', 'max:255'],
+            'programming_languages' => ['nullable', 'string', 'max:255'],
+            'projects' => ['nullable', 'string', 'max:255'],
+            'certifications' => ['nullable', 'string', 'max:255'],
+            'github_url' => ['nullable', 'string', 'max:255'],
+            'industry' => ['nullable', 'string', 'max:255'],
+            'bio' => ['nullable', 'string'],
+            'image' => ['nullable', 'image', 'max:2048'],
+            'banner' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,svg', 'max:2048'],
         ];
     }
 }

@@ -9,31 +9,32 @@ use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'name',
         'email',
-        'phone_number',
-        'technical_skills',
-        'bio',
-        'completed_projects',
-        'certifications',
-        'photo',
-        'github_link',
         'password',
+        'skills',
+        'programming_languages',
+        'projects',
+        'certifications',
+        'github_url',
+        'image',
+        'industry',
+        'banner',
+        'bio',
     ];
 
     /**
      * The attributes that should be hidden for serialization.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $hidden = [
         'password',

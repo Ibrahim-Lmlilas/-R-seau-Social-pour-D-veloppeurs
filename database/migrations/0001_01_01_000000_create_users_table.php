@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 
 return new class extends Migration
 {
@@ -18,13 +17,6 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('phone_number')->nullable();
-            $table->text('technical_skills')->nullable();
-            $table->text('bio')->nullable();
-            $table->text('completed_projects')->nullable();
-            $table->text('certifications')->nullable();
-            $table->string('photo')->nullable();
-            $table->string('github_link')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });
@@ -53,6 +45,5 @@ return new class extends Migration
         Schema::dropIfExists('users');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('sessions');
-        Storage::deleteDirectory('public/photos');
     }
 };

@@ -37,6 +37,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/create/image', [PostController::class, 'createImage'])->name('posts.createImage');
     Route::post('/posts/store/image', [PostController::class, 'storeImage'])->name('posts.storeImage');
 
+    Route::resource('posts', PostController::class)->middleware('auth');
+
 });
 
 require __DIR__ . '/auth.php';

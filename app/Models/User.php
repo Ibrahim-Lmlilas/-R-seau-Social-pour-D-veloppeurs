@@ -42,6 +42,11 @@ class User extends Authenticatable
         'remember_token',
     ];
 
+    public function hasSentConnectionRequestTo(User $user)
+    {
+        return $this->sentConnectionRequests()->where('connection_id', $user->id)->exists();
+    }
+
     /**
      * Get the attributes that should be cast.
      *

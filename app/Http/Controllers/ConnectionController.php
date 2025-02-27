@@ -88,9 +88,11 @@ class ConnectionController extends Controller
         $pendingRequests = Connection::where('connection_id', $loggedInUser->id)
                                      ->where('status', 'pending')
                                      ->get();
+        $sentRequests = Connection::where('user_id', $loggedInUser->id)
+                                     ->get();
         $posts = Post::where('user_id', $loggedInUser->id)->get();
         $postCount = $posts->count();
 
-        return view('connections.index', compact('userss', 'user', 'pendingRequests', 'postCount'));
+        return view('connections.index', compact('userss', 'user', 'pendingRequests', 'sentRequests', 'postCount'));
     }
 }

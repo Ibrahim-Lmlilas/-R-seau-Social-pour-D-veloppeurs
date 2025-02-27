@@ -13,7 +13,7 @@ class PostController extends Controller
     public function index(): View
     {
         $user = Auth::user();
-        $posts = Post::where('user_id', $user->id)->get();
+        $posts = Post::all();
         return view('dashboard', compact('posts', 'user'));
     }
 

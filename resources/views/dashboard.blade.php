@@ -93,8 +93,9 @@
                 </div>
 
                 <!-- Posts -->
-                @foreach ($posts as $post )
+
                 <div class="bg-white rounded-xl shadow-sm mt-12 ">
+                    @foreach ($posts as $post )
                     <div class="p-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
@@ -136,7 +137,7 @@
                                 </div>
                             </div>
                         </div>
-                            @endforeach
+
 
                             <div class="mt-4 flex flex-wrap gap-2">
                                 <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">#nodejs</span>
@@ -167,8 +168,9 @@
                             </div>
                             @endforeach
                         </div>
+
                     </div>
-                    @endforeach
+
                 </div>
 
 

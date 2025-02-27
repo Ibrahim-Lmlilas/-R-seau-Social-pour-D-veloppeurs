@@ -11,12 +11,7 @@ Route::get('/', function () {
 
 use Illuminate\Support\Facades\Auth;
 
-Route::get('/dashboard', function () {
-    $user = Auth::user();
-    $posts = Post::where('user_id', $user->id)->get();
-    $postCount = $posts->count(); // Count the posts
-    return view('posts.my_posts', compact('posts', 'user', 'postCount'));
-})->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', [PostController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 
 use App\Http\Controllers\ConnectionController;

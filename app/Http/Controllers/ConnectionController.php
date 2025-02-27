@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 
 use App\Models\User;
 use App\Models\Connection;
+use App\Models\Post;
 use Illuminate\Support\Facades\Auth;
 
 class ConnectionController extends Controller
@@ -73,7 +74,7 @@ class ConnectionController extends Controller
         return back()->with('success', 'Connection request rejected.');
     }
 
-   
+
 
     public function getConnections()
     {
@@ -81,6 +82,15 @@ class ConnectionController extends Controller
         $userss = User::where('id', '!=', Auth::id())->get();
         $user = $loggedInUser;
 
-        return view('connections.index', compact('userss', 'user'));
+        $user = Auth::user();
+        $posts = Post::where('user_id', $user->id)->get();
+        $postCount = $posts->count(); // Count the posts
+        $pendingRequests = Connection::where('connection_id', $loggedInUser->id)
+                                     ->where('status', 'pending')
+                                     ->get();
+        $posts = Post::where('user_id', $loggedInUser->id)->get();
+        $postCount = $posts->count();
+
+        return view('connections.index', compact('userss', 'user', 'pendingRequests', 'postCount'));
     }
 }

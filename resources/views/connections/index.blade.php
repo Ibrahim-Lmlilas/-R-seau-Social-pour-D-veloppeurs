@@ -54,7 +54,7 @@
                             </div>
                             <div class="flex justify-between text-sm mt-2">
                                 <span class="text-gray-500">Posts</span>
-                                <span class="text-blue-600 font-medium">{{ $user->posts }}</span>
+                                <span class="text-blue-600 font-medium">{{ $postCount }}</span>
                             </div>
                         </div>
                     </div>
@@ -80,6 +80,46 @@
 
                             </div>
                         @endforeach
+                    </div>
+                </div>
+            </div>
+
+            <!-- Pending Connection Requests -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+                    <div class="bg-white rounded-xl shadow-sm p-4">
+                        <h3 class="font-semibold mb-4">Pending Connection Requests</h3>
+                        <div class="space-y-4">
+                            @if(count($pendingRequests) > 0)
+                                @foreach($pendingRequests as $request)
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center space-x-3">
+                                            <img src="{{ asset('storage/' . $request->user->image) }}" alt="User" class="w-10 h-10 rounded-full"/>
+                                            <div>
+                                                <h4 class="font-medium">{{ $request->user->name }}</h4>
+                                                <p class="text-gray-500 text-sm">{{ $request->user->industry }}</p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <form method="POST" action="{{ route('connections.accept', $request->user) }}">
+                                                @csrf
+                                                <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                                                    Accept
+                                                </button>
+                                            </form>
+                                            <form method="POST" action="{{ route('connections.reject', $request->user) }}">
+                                                @csrf
+                                                <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                                    Reject
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+                                @endforeach
+                            @else
+                                <p>No pending connection requests.</p>
+                            @endif
+                        </div>
                     </div>
                 </div>
             </div>

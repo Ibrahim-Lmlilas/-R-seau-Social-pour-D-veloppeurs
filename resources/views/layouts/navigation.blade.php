@@ -19,6 +19,9 @@
                     <x-nav-link :href="route('connections.index')" :active="request()->routeIs('connections.index')">
                         {{ __('Connections') }}
                     </x-nav-link>
+                    <x-nav-link :href="route('posts.myPosts')" :active="request()->routeIs('posts.myPosts')">
+                        {{ __('My Posts') }}
+                    </x-nav-link>
                 </div>
             </div>
 
@@ -77,6 +80,9 @@
             </x-responsive-nav-link>
             <x-responsive-nav-link :href="route('connections.index')" :active="request()->routeIs('connections.index')">
                 {{ __('Connections') }}
+            </x-responsive-nav-link>
+            <x-responsive-nav-link :href="route('posts.myPosts')" :active="request()->routeIs('posts.myPosts')">
+                {{ __('My Posts') }}
             </x-responsive-nav-link>
         </div>
 

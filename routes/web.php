@@ -13,8 +13,9 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
-    $posts = Post::all(); // Fetch all posts
-    return view('dashboard', compact('user', 'posts')); // Pass $user and $posts
+    $posts = Post::where('user_id', $user->id)->get();
+    $postCount = $posts->count(); // Count the posts
+    return view('posts.my_posts', compact('posts', 'user', 'postCount'));
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
@@ -30,6 +31,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/connections/{user}/reject', [ConnectionController::class, 'rejectConnectionRequest'])->name('connections.reject');
     Route::get('/connections', [ConnectionController::class, 'getConnections'])->name('connections.index');
 
+    Route::get('/my-posts', [PostController::class, 'myPosts'])->name('posts.myPosts');
+    Route::resource('posts', PostController::class)->middleware('auth');
+
     Route::get('/posts/create/line', [PostController::class, 'createLine'])->name('posts.createLine');
     Route::post('/posts/store/line', [PostController::class, 'storeLine'])->name('posts.storeLine');
 
@@ -38,8 +42,6 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/posts/create/image', [PostController::class, 'createImage'])->name('posts.createImage');
     Route::post('/posts/store/image', [PostController::class, 'storeImage'])->name('posts.storeImage');
-
-    Route::resource('posts', PostController::class)->middleware('auth');
 
 });
 

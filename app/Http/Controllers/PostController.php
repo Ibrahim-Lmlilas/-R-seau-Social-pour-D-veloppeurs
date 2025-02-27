@@ -111,4 +111,12 @@ class PostController extends Controller
     {
         //
     }
+
+    public function myPosts(): View
+    {
+        $user = Auth::user();
+        $posts = Post::where('user_id', $user->id)->get();
+        $postCount = $posts->count(); // Count the posts
+        return view('posts.my_posts', compact('posts', 'user', 'postCount')); // Pass $user and $postCount to the view
+    }
 }

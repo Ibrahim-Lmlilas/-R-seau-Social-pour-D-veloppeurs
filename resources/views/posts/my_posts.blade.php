@@ -11,7 +11,7 @@
     <x-app-layout>
         <x-slot name="header">
             <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Home') }}
+                {{ __('My Posts ') }}
             </h2>
         </x-slot>
         <!-- Main Content -->
@@ -137,6 +137,7 @@
                             </div>
                         </div>
 
+
                             <div class="mt-4 flex flex-wrap gap-2">
                                 <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">#nodejs</span>
                                 <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">#redis</span>
@@ -168,7 +169,6 @@
                         </div>
                     </div>
                 </div>
-
 
 
                 <!-- Right Sidebar -->

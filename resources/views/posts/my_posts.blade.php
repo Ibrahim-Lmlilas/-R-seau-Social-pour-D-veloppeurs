@@ -46,10 +46,7 @@
                         </div>
 
                         <div class="mt-4 pt-4 border-t">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">Connections</span>
-                                <span class="text-blue-600 font-medium">{{ $user->connections }}</span>
-                            </div>
+                            
                             <div class="flex justify-between text-sm mt-2">
                                 <span class="text-gray-500">Posts</span>
                                 <span class="text-blue-600 font-medium">{{ $postCount }}</span>
@@ -165,9 +162,11 @@
                                     </svg>
                                 </button>
                             </div>
-                            @endforeach
+
                         </div>
+
                     </div>
+                     @endforeach
                 </div>
 
 

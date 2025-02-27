@@ -19,6 +19,7 @@ class Post extends Model
         'line',
         'code',
         'image',
+        'hashtags',
     ];
 
     public function user()

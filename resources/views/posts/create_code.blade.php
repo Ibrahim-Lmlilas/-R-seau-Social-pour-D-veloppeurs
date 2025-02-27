@@ -30,6 +30,12 @@
                             <x-input-error :messages="$errors->get('code')" class="mt-2" />
                         </div>
 
+                        <div class="mt-4">
+                            <x-input-label for="hashtags" :value="__('Hashtags (separated by #)')" />
+                            <x-text-input id="hashtags" class="block mt-1 w-full" type="text" name="hashtags" />
+                            <x-input-error :messages="$errors->get('hashtags')" class="mt-2" />
+                        </div>
+
                         <div class="flex items-center justify-end mt-4">
                             <x-primary-button class="ms-4">
                                 {{ __('Create') }}

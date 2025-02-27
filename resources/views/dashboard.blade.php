@@ -45,16 +45,7 @@
 
                         </div>
 
-                        <div class="mt-4 pt-4 border-t">
-                            <div class="flex justify-between text-sm">
-                                <span class="text-gray-500">Connections</span>
-                                <span class="text-blue-600 font-medium">{{ $user->connections }}</span>
-                            </div>
-                            <div class="flex justify-between text-sm mt-2">
-                                <span class="text-gray-500">Posts</span>
-                                <span class="text-blue-600 font-medium">{{ $user->posts }}</span>
-                            </div>
-                        </div>
+
                     </div>
                 </div>
             </div>
@@ -93,9 +84,9 @@
                 </div>
 
                 <!-- Posts -->
-
+@foreach ($posts as $post )
                 <div class="bg-white rounded-xl shadow-sm mt-12 ">
-                    @foreach ($posts as $post )
+
                     <div class="p-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
@@ -140,9 +131,11 @@
 
 
                             <div class="mt-4 flex flex-wrap gap-2">
-                                <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">#nodejs</span>
-                                <span class="px-2 py-1 bg-red-100 text-red-800 rounded-full text-xs">#redis</span>
-                                <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">#performance</span>
+                                @if($post->hashtags)
+                                    @foreach(explode(',', $post->hashtags) as $hashtag)
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">#{{ trim($hashtag) }}</span>
+                                    @endforeach
+                                @endif
                             </div>
 
                             <div class="mt-4 flex items-center justify-between border-t pt-4">
@@ -166,11 +159,11 @@
                                     </svg>
                                 </button>
                             </div>
-                            @endforeach
+
                         </div>
 
                     </div>
-
+ @endforeach
                 </div>
 
 

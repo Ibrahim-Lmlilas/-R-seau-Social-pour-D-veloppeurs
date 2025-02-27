@@ -46,6 +46,7 @@ class PostController extends Controller
         $post->description = $request->description;
         $post->type = 'line';
         $post->line = $request->line;
+        $post->hashtags = $request->hashtags;
         $post->save();
 
         return redirect()->route('dashboard');
@@ -65,6 +66,7 @@ class PostController extends Controller
         $post->description = $request->description;
         $post->type = 'code';
         $post->code = $request->code;
+        $post->hashtags = $request->hashtags;
         $post->save();
 
         return redirect()->route('dashboard');
@@ -87,6 +89,7 @@ class PostController extends Controller
         $post->type = 'image';
         $post->image = $imagePath;
         $post->content = $imagePath;
+        $post->hashtags = $request->hashtags;
         $post->save();
 
         return redirect()->route('dashboard');

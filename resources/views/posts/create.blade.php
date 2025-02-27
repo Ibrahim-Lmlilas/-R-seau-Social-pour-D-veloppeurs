@@ -26,8 +26,8 @@
 
                         <div class="mt-4">
                             <x-input-label for="image" :value="__('Image')" />
-                            <x-text-input id="image" class="block mt-1 w-full" type="file" name="image" :value="old('image')" autocomplete="image" />
-                            <x-input-error :messages="$errors->get('image')" class="mt-2" />
+                            <input id="image" name="image" type="file" class="mt-1 block w-full" autocomplete="image" />
+                            <x-input-error class="mt-2" :messages="$errors->get('image')" />
                         </div>
 
                         <div class="flex items-center justify-end mt-4">

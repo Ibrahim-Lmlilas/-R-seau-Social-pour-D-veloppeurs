@@ -29,6 +29,7 @@ class User extends Authenticatable
         'industry',
         'banner',
         'bio',
+
     ];
 
     /**
@@ -46,11 +47,41 @@ class User extends Authenticatable
      *
      * @return array<string, string>
      */
-    protected function casts(): array
+    protected function casts()
     {
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'skills' => 'string',
+            'programming_languages' => 'string',
+            'projects' => 'string',
+            'certifications' => 'string',
+            'github_url' => 'string',
+            'image' => 'string',
+            'industry' => 'string',
+            'banner' => 'string',
+            'bio' => 'string',
         ];
+    }
+
+    public function connections()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connection_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'accepted');
+    }
+
+    public function sentConnectionRequests()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connection_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'pending');
+    }
+
+    public function receivedConnectionRequests()
+    {
+        return $this->belongsToMany(User::class, 'connections', 'connection_id', 'user_id')
+                    ->withPivot('status')
+                    ->wherePivot('status', 'pending');
     }
 }

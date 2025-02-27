@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\Storage;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -19,6 +20,16 @@ class ProfileController extends Controller
     {
         return view('profile.edit', [
             'user' => $request->user(),
+        ]);
+    }
+
+    /**
+     * Display another user's profile.
+     */
+    public function show(User $user): View
+    {
+        return view('profile.edit', [
+            'user' => $user,
         ]);
     }
 

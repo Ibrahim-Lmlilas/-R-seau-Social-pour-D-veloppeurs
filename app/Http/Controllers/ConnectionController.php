@@ -76,9 +76,8 @@ class ConnectionController extends Controller
     public function getConnections()
     {
         $loggedInUser = Auth::user();
+        $users = User::where('id', '!=', $loggedInUser->id)->get();
 
-        $connections = $loggedInUser->connections;
-
-        return view('connections.index', compact('connections'));
+        return view('connections.index', compact('users'));
     }
 }

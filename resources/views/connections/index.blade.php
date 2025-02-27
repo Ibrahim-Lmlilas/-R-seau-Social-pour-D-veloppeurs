@@ -22,8 +22,8 @@
                     @endif
 
                     <ul>
-                        @foreach ($connections as $connection)
-                            <li>{{ $connection->name }}</li>
+                        @foreach ($users as $user)
+                            <li>{{ $user->name }}</li>
                         @endforeach
                     </ul>
                 </div>

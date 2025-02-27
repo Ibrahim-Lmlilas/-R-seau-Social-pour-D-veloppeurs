@@ -28,8 +28,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/connections/{user}/reject', [ConnectionController::class, 'rejectConnectionRequest'])->name('connections.reject');
     Route::get('/connections', [ConnectionController::class, 'getConnections'])->name('connections.index');
 
-    
-    Route::resource('posts', PostController::class)->middleware('auth');
+    Route::get('/posts/create/line', [PostController::class, 'createLine'])->name('posts.createLine');
+    Route::post('/posts/store/line', [PostController::class, 'storeLine'])->name('posts.storeLine');
+
+    Route::get('/posts/create/code', [PostController::class, 'createCode'])->name('posts.createCode');
+    Route::post('/posts/store/code', [PostController::class, 'storeCode'])->name('posts.storeCode');
+
+    Route::get('/posts/create/image', [PostController::class, 'createImage'])->name('posts.createImage');
+    Route::post('/posts/store/image', [PostController::class, 'storeImage'])->name('posts.storeImage');
+
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

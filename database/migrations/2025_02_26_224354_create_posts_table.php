@@ -16,6 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained('users');
             $table->string('title');
             $table->text('description');
+            $table->string('type');
+            $table->text('content')->nullable();
+            $table->text('line')->nullable();
+            $table->text('code')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
         });

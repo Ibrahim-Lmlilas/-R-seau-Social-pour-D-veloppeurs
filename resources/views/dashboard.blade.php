@@ -52,7 +52,7 @@
                             </div>
                             <div class="flex justify-between text-sm mt-2">
                                 <span class="text-gray-500">Posts</span>
-                                <span class="text-blue-600 font-medium">{{ $postCount }}</span>
+                                <span class="text-blue-600 font-medium">{{ $user->posts }}</span>
                             </div>
                         </div>
                     </div>
@@ -136,6 +136,7 @@
                                 </div>
                             </div>
                         </div>
+                            @endforeach
 
                             <div class="mt-4 flex flex-wrap gap-2">
                                 <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">#nodejs</span>
@@ -167,6 +168,7 @@
                             @endforeach
                         </div>
                     </div>
+                    @endforeach
                 </div>
 
 

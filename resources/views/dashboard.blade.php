@@ -93,15 +93,16 @@
                 </div>
 
                 <!-- Posts -->
+                @foreach ($posts as $post )
                 <div class="bg-white rounded-xl shadow-sm">
                     <div class="p-4">
                         <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3">
-                                <img src="https://avatar.iran.liara.run/public/boy" alt="User" class="w-12 h-12 rounded-full"/>
+                                <img src="{{ asset('storage/' . $post->user->image) }}" alt="User" class="w-12 h-12 rounded-full"/>
                                 <div>
-                                    <h3 class="font-semibold">Alex Chen</h3>
-                                    <p class="text-gray-500 text-sm">Senior Backend Developer at Tech Corp</p>
-                                    <p class="text-gray-400 text-xs">1h ago</p>
+                                    <h3 class="font-semibold">{{$post->user->name}}</h3>
+                                    <p class="text-gray-500 text-sm">{{$post->user->industry}}</p>
+                                    <p class="text-gray-400 text-xs">{{ $post->created_at->diffForHumans() }}</p>
                                 </div>
                             </div>
                             <button class="text-gray-400 hover:text-gray-600">
@@ -112,25 +113,30 @@
                         </div>
 
                         <div class="mt-4">
-                            <p class="text-gray-700">Just implemented a caching layer using Redis that reduced our API response time by 70%! Here's a simple example of how to implement caching in Node.js:</p>
+                            <h3 class="font-semibold">{{ $post->title }}</h3>
+                            <p class="text-gray-700">{{$post->description}}</p>
 
-                            <div class="mt-4 bg-gray-900 rounded-lg p-4 font-mono text-sm text-gray-200">
-                                <pre><code>
-            const redis = require('redis');
-            const client = redis.createClient();
+                            <div class="bg-white rounded-xl shadow-sm">
+                                <div class="p-4">
 
-            async function getCachedData(key) {
-              const cached = await client.get(key);
-              if (cached) {
-                return JSON.parse(cached);
-              }
+                                        <div class="mb-4">
 
-              const data = await fetchDataFromDB();
-              await client.setEx(key, 3600, JSON.stringify(data));
-              return data;
-            }
-                                </code></pre>
+
+                                            @if($post->type === 'line')
+                                                <a href="{{ $post->line }}" class="text-gray-700">{{ $post->line }}</a>
+
+                                            @elseif($post->type === 'code')
+                                            <div class="mt-4 bg-gray-900 rounded-lg p-4 font-mono text-sm text-gray-200">  <pre><code> {{ $post->code }} </code></pre></div>
+
+                                            @elseif($post->type === 'image')
+                                                <img src="{{ asset('storage/' . $post->image) }}" alt="Post Image" class="mt-2 rounded-md"/>
+                                            @endif
+                                        </div>
+
+                                </div>
                             </div>
+                        </div>
+                            @endforeach
 
                             <div class="mt-4 flex flex-wrap gap-2">
                                 <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">#nodejs</span>
@@ -166,43 +172,7 @@
                 <!-- Right Sidebar -->
                 <div class="space-y-6">
                     <!-- Job Recommendations -->
-                    <div class="bg-white rounded-xl shadow-sm p-4">
-                        <h3 class="font-semibold mb-4">Job Recommendations</h3>
-                        <div class="space-y-4">
-                            <div class="p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-                                <div class="flex items-start space-x-3">
-                                    <img src="/api/placeholder/40/40" alt="Company" class="w-10 h-10 rounded"/>
-                                    <div>
-                                        <h4 class="font-medium">Senior Full Stack Developer</h4>
-                                        <p class="text-gray-500 text-sm">TechStart Inc.</p>
-                                        <p class="text-gray-500 text-sm">Remote • Full-time</p>
-                                        <div class="mt-2 flex flex-wrap gap-2">
-                                            <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">React</span>
-                                            <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">Node.js</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200">
-                                <div class="flex items-start space-x-3">
-                                    <img src="/api/placeholder/40/40" alt="Company" class="w-10 h-10 rounded"/>
-                                    <div>
-                                        <h4 class="font-medium">DevOps Engineer</h4>
-                                        <p class="text-gray-500 text-sm">CloudScale Solutions</p>
-                                        <p class="text-gray-500 text-sm">San Francisco • Hybrid</p>
-                                        <div class="mt-2 flex flex-wrap gap-2">
-                                            <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">AWS</span>
-                                            <span class="px-2 py-1 bg-gray-100 text-gray-600 rounded-full text-xs">Docker</span>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <button class="mt-4 w-full text-blue-500 hover:text-blue-600 text-sm font-medium">
-                            View All Jobs
-                        </button>
-                    </div>
 
                     <!-- Suggested Connections -->
 

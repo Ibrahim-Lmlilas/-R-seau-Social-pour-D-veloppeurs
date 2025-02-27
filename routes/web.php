@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
+use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -12,7 +13,8 @@ use Illuminate\Support\Facades\Auth;
 
 Route::get('/dashboard', function () {
     $user = Auth::user();
-    return view('dashboard', compact('user'));
+    $posts = Post::all(); // Fetch all posts
+    return view('dashboard', compact('user', 'posts')); // Pass $user and $posts
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 

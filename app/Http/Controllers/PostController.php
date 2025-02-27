@@ -10,6 +10,12 @@ use Illuminate\View\View;
 
 class PostController extends Controller
 {
+    public function index(): View
+    {
+        $user = Auth::user();
+        $posts = Post::where('user_id', $user->id)->get();
+        return view('dashboard', compact('posts', 'user'));
+    }
 
     public function createLine(): View
     {

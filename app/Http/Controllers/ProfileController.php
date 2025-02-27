@@ -23,15 +23,7 @@ class ProfileController extends Controller
         ]);
     }
 
-    /**
-     * Display another user's profile.
-     */
-    public function show(User $user): View
-    {
-        return view('profile.edit', [
-            'user' => $user,
-        ]);
-    }
+
 
     /**
      * Update the user's profile information.

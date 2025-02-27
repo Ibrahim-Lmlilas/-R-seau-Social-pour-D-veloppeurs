@@ -208,25 +208,7 @@
                     </div>
 
                     <!-- Suggested Connections -->
-                    <div class="bg-white rounded-xl shadow-sm p-4">
-                        <h3 class="font-semibold mb-4">Suggested Connections</h3>
-                        <div class="space-y-4">
-                            @foreach(\App\Models\User::where('id', '!=', Auth::id())->get() as $otherUser)
-                                <div class="flex items-center justify-between">
-                                    <div class="flex items-center space-x-3">
-                                        <img src="https://avatar.iran.liara.run/public/boy" alt="User" class="w-10 h-10 rounded-full"/>
-                                        <div>
-                                            <h4 class="font-medium">{{ $otherUser->name }}</h4>
-                                            <p class="text-gray-500 text-sm">Frontend Developer</p>
-                                        </div>
-                                    </div>
-                                    <a href="{{ route('profile.show', $otherUser) }}" class="text-blue-500 hover:text-blue-600">
-                                        View Profile
-                                    </a>
-                                </div>
-                            @endforeach
-                        </div>
-                    </div>
+                    
                 </div>
             </body>
             </html>

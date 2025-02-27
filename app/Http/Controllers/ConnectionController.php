@@ -73,11 +73,14 @@ class ConnectionController extends Controller
         return back()->with('success', 'Connection request rejected.');
     }
 
+   
+
     public function getConnections()
     {
         $loggedInUser = Auth::user();
-        $users = User::where('id', '!=', $loggedInUser->id)->get();
+        $userss = User::where('id', '!=', Auth::id())->get();
+        $user = $loggedInUser;
 
-        return view('connections.index', compact('users'));
+        return view('connections.index', compact('userss', 'user'));
     }
 }

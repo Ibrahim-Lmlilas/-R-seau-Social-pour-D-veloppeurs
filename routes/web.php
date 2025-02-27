@@ -27,7 +27,6 @@ Route::middleware('auth')->group(function () {
     Route::post('/connections/{user}/accept', [ConnectionController::class, 'acceptConnectionRequest'])->name('connections.accept');
     Route::post('/connections/{user}/reject', [ConnectionController::class, 'rejectConnectionRequest'])->name('connections.reject');
     Route::get('/connections', [ConnectionController::class, 'getConnections'])->name('connections.index');
-    Route::get('/profile/{user}', [ProfileController::class, 'show'])->name('profile.show');
     Route::resource('posts', PostController::class)->middleware('auth');
 });
 

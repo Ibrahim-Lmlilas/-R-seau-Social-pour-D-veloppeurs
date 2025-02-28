@@ -200,23 +200,34 @@
                                     </div>
                                 </form>
 
+                                <!-- Replace the existing comment display section -->
                                 <div class="comments-container mt-4 space-y-4">
                                     @foreach($post->comments()->with('user')->latest()->get() as $comment)
-                                        <div class="flex items-start space-x-3">
+                                        <div class="flex items-start space-x-3 comment-item" id="comment-{{ $comment->id }}">
                                             <img src="{{ asset('storage/' . $comment->user->image) }}" alt="User" class="w-8 h-8 rounded-full"/>
                                             <div class="flex-grow bg-gray-50 rounded-lg p-3">
                                                 <div class="flex items-center justify-between">
-                                                    <h4 class="font-semibold">{{ $comment->user->name }}</h4>
-                                                    <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                                    <div>
+                                                        <h4 class="font-semibold">{{ $comment->user->name }}</h4>
+                                                        <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                    @if(Auth::id() === $comment->user_id)
+                                                        <button
+                                                            class="delete-comment text-gray-400 hover:text-red-500"
+                                                            data-comment-id="{{ $comment->id }}"
+                                                        >
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
+                                                    @endif
                                                 </div>
                                                 <p class="text-gray-700 mt-1">{{ $comment->content }}</p>
                                             </div>
                                         </div>
                                     @endforeach
                                 </div>
-
-
-                        </div>
+                            </div>
 
                         </div>
 
@@ -254,16 +265,14 @@
                         })
                         .then(response => response.json())
                         .then(data => {
-                            // Update likes count
                             likesCount.textContent = data.likes_count;
 
-                            // Toggle like button appearance
                             if (data.liked) {
-                                svg.classList.add('text-blue-500');
                                 svg.setAttribute('fill', 'currentColor');
+                                svg.classList.add('text-blue-500');
                             } else {
-                                svg.classList.remove('text-blue-500');
                                 svg.setAttribute('fill', 'none');
+                                svg.classList.remove('text-blue-500');
                             }
                         })
                         .catch(error => console.error('Error:', error));
@@ -271,46 +280,76 @@
                 });
 
                 document.querySelectorAll('.comment-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
-                    const postId = this.dataset.postId;
-                    const textarea = this.querySelector('textarea');
+                    form.addEventListener('submit', function(e) {
+                        e.preventDefault();
+                        const postId = this.dataset.postId;
+                        const textarea = this.querySelector('textarea');
 
-                    fetch(`/posts/${postId}/comments`, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            content: textarea.value
+                        fetch(`/posts/${postId}/comments`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                content: textarea.value
+                            })
                         })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        // Add the new comment to the list
-                        const commentsContainer = this.nextElementSibling;
-                        const commentHtml = `
-                            <div class="flex items-start space-x-3">
-                                <img src="${data.comment.user.image}" alt="User" class="w-8 h-8 rounded-full"/>
-                                <div class="flex-grow bg-gray-50 rounded-lg p-3">
-                                    <div class="flex items-center justify-between">
-                                        <h4 class="font-semibold">${data.comment.user.name}</h4>
-                                        <span class="text-xs text-gray-500">Just now</span>
+                        .then(response => response.json())
+                        .then(data => {
+                            // Add the new comment to the list
+                            const commentsContainer = this.nextElementSibling;
+                            const commentHtml = `
+                                <div class="flex items-start space-x-3">
+                                    <img src="${data.comment.user.image}" alt="User" class="w-8 h-8 rounded-full"/>
+                                    <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                                        <div class="flex items-center justify-between">
+                                            <h4 class="font-semibold">${data.comment.user.name}</h4>
+                                            <span class="text-xs text-gray-500">Just now</span>
+                                        </div>
+                                        <p class="text-gray-700 mt-1">${data.comment.content}</p>
                                     </div>
-                                    <p class="text-gray-700 mt-1">${data.comment.content}</p>
                                 </div>
-                            </div>
-                        `;
-                        commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+                            `;
+                            commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
 
-                        textarea.value = '';
-                    })
-                    .catch(error => console.error('Error:', error));
+                            textarea.value = '';
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
                 });
-            });
-                </script>
+
+                // Add this to your existing script section
+                document.querySelectorAll('.delete-comment').forEach(button => {
+                    button.addEventListener('click', function() {
+                        if (confirm('Are you sure you want to delete this comment?')) {
+                            const commentId = this.dataset.commentId;
+
+                            fetch(`/comments/${commentId}`, {
+                                method: 'DELETE',
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                    'Accept': 'application/json',
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    document.getElementById(`comment-${commentId}`).remove();
+
+                                    // Update comment count
+                                    const commentCountElement = button.closest('.bg-white').querySelector('.flex.items-center.space-x-4 span:last-child');
+                                    const currentCount = parseInt(commentCountElement.textContent);
+                                    commentCountElement.textContent = currentCount - 1;
+                                }
+                            })
+                            .catch(error => console.error('Error:', error));
+                        }
+                    });
+                });
+            </script>
             </html>
 
     </x-app-layout>

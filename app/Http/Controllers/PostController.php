@@ -110,4 +110,24 @@ class PostController extends Controller
         $postCount = $posts->total(); // Count the posts
         return view('posts.my_posts', compact('posts', 'user', 'postCount')); // Pass $user and $postCount to the view
     }
+
+    public function like(Post $post)
+    {
+        $user = Auth::user();
+        $liked = false;
+
+        if ($post->likes()->where('user_id', $user->id)->exists()) {
+            $post->likes()->where('user_id', $user->id)->delete();
+        } else {
+            $post->likes()->create([
+                'user_id' => $user->id
+            ]);
+            $liked = true;
+        }
+
+        return response()->json([
+            'likes_count' => $post->likes()->count(),
+            'liked' => $liked
+        ]);
+    }
 }

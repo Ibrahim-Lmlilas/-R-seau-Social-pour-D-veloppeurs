@@ -37,26 +37,25 @@
                             </a>
                         </div>
                         <p class="text-gray-600 text-sm mt-1">{{ $user->industry }}</p>
-                        <p class="text-gray-500 text-sm mt-2">{{ $user->certifications }}</p>
-                        <p class="text-gray-500 text-sm mt-2">{{ $user->bio }}</p>
-
-
 
                         <div class="mt-4 flex flex-wrap gap-2">
                             <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{{$user->skills}}</span>
 
                         </div>
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{{$user->programming_languages}}</span>
+
+                        </div>
+                        <p class="text-gray-500 text-sm mt-2">{{ $user->certifications }}</p>
+                        <p class="text-gray-500 text-sm mt-2">{{ $user->bio }}</p>
+
 
                         <div class="mt-4 pt-4 border-t">
                             <div class="flex justify-between text-sm">
                                 <span class="text-gray-500">Connections</span>
                                 <span class="text-blue-600 font-medium">{{ $user->connections }}</span>
                             </div>
-                            <div class="flex justify-between text-sm mt-2">
-                                <span class="text-gray-500">Posts</span>
-                                <span class="text-blue-600 font-medium">{{ $postCount }}</span>
-                            </div>
-                        </div>
+                       </div>
                     </div>
                 </div>
 

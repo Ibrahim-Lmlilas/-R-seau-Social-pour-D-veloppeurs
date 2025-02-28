@@ -39,7 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/create/image', [PostController::class, 'createImage'])->name('posts.createImage');
     Route::post('/posts/store/image', [PostController::class, 'storeImage'])->name('posts.storeImage');
 
-    Route::post('/posts/{post}/like', [LikeController::class, 'like'])->name('posts.like');
+    Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like')->middleware('auth');
 });
 
 require __DIR__ . '/auth.php';

@@ -191,7 +191,7 @@
  @endforeach
                 </div>
 
-
+                {{ $posts->links() }}
 
                 <!-- Right Sidebar -->
                 <div class="space-y-6">

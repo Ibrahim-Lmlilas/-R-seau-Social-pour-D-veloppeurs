@@ -7,13 +7,21 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
+use App\Services\PostService;
 
 class PostController extends Controller
 {
+    private $postService;
+
+    public function __construct(PostService $postService)
+    {
+        $this->postService = $postService;
+    }
+
     public function index(): View
     {
         $user = Auth::user();
-        $posts = Post::all();
+        $posts = Post::orderBy('created_at', 'desc')->paginate(10);
         return view('dashboard', compact('posts', 'user'));
     }
 
@@ -34,63 +42,21 @@ class PostController extends Controller
 
     public function storeLine(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'line' => 'required',
-        ]);
-
-        $post = new Post();
-        $post->user_id = Auth::id();
-        $post->title = $request->title;
-        $post->description = $request->description;
-        $post->type = 'line';
-        $post->line = $request->line;
-        $post->hashtags = $request->hashtags;
-        $post->save();
+        $this->postService->createLinePost($request);
 
         return redirect()->route('dashboard');
     }
 
     public function storeCode(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'code' => 'required',
-        ]);
-
-        $post = new Post();
-        $post->user_id = Auth::id();
-        $post->title = $request->title;
-        $post->description = $request->description;
-        $post->type = 'code';
-        $post->code = $request->code;
-        $post->hashtags = $request->hashtags;
-        $post->save();
+        $this->postService->createCodePost($request);
 
         return redirect()->route('dashboard');
     }
 
     public function storeImage(Request $request)
     {
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        $imagePath = $request->file('image')->store('posts', 'public');
-
-        $post = new Post();
-        $post->user_id = Auth::id();
-        $post->title = $request->title;
-        $post->description = $request->description;
-        $post->type = 'image';
-        $post->image = $imagePath;
-        $post->content = $imagePath;
-        $post->hashtags = $request->hashtags;
-        $post->save();
+        $this->postService->createImagePost($request);
 
         return redirect()->route('dashboard');
     }
@@ -119,45 +85,7 @@ class PostController extends Controller
             abort(403, 'Unauthorized action.');
         }
 
-        $request->validate([
-            'title' => 'required',
-            'description' => 'required',
-            'hashtags' => 'nullable',
-            'type' => 'required|in:line,code,image',
-            'line' => 'nullable|required_if:type,line',
-            'code' => 'nullable|required_if:type,code',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        ]);
-
-        if ($request->type === 'image' && !$request->hasFile('image') && !$post->image) {
-            $request->validate([
-                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            ]);
-        }
-
-        $post->title = $request->title;
-        $post->description = $request->description;
-        $post->hashtags = $request->hashtags;
-        $post->type = $request->type;
-
-        if ($request->type === 'line') {
-            $post->line = $request->line;
-            $post->code = null;
-            $post->image = null;
-        } elseif ($request->type === 'code') {
-            $post->code = $request->code;
-            $post->line = null;
-            $post->image = null;
-        } elseif ($request->type === 'image') {
-            if ($request->hasFile('image')) {
-                $imagePath = $request->file('image')->store('posts', 'public');
-                $post->image = $imagePath;
-            }
-            $post->line = null;
-            $post->code = null;
-        }
-
-        $post->save();
+        $this->postService->updatePost($request, $post);
 
         return redirect()->route('posts.myPosts')->with('success', 'Post updated successfully.');
     }
@@ -178,7 +106,7 @@ class PostController extends Controller
     public function myPosts(): View
     {
         $user = Auth::user();
-        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(20);
+        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10);
         $postCount = $posts->total(); // Count the posts
         return view('posts.my_posts', compact('posts', 'user', 'postCount')); // Pass $user and $postCount to the view
     }

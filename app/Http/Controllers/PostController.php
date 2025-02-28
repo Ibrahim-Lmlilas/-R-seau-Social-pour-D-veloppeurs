@@ -102,24 +102,84 @@ class PostController extends Controller
 
     public function edit(string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+
+        if (Auth::user()->id !== $post->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        return view('posts.edit', compact('post'));
     }
 
     public function update(Request $request, string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+
+        if (Auth::user()->id !== $post->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'title' => 'required',
+            'description' => 'required',
+            'hashtags' => 'nullable',
+            'type' => 'required|in:line,code,image',
+            'line' => 'nullable|required_if:type,line',
+            'code' => 'nullable|required_if:type,code',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+        ]);
+
+        if ($request->type === 'image' && !$request->hasFile('image') && !$post->image) {
+            $request->validate([
+                'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+        }
+
+        $post->title = $request->title;
+        $post->description = $request->description;
+        $post->hashtags = $request->hashtags;
+        $post->type = $request->type;
+
+        if ($request->type === 'line') {
+            $post->line = $request->line;
+            $post->code = null;
+            $post->image = null;
+        } elseif ($request->type === 'code') {
+            $post->code = $request->code;
+            $post->line = null;
+            $post->image = null;
+        } elseif ($request->type === 'image') {
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('posts', 'public');
+                $post->image = $imagePath;
+            }
+            $post->line = null;
+            $post->code = null;
+        }
+
+        $post->save();
+
+        return redirect()->route('posts.myPosts')->with('success', 'Post updated successfully.');
     }
 
     public function destroy(string $id)
     {
-        //
+        $post = Post::findOrFail($id);
+
+        if (Auth::user()->id !== $post->user_id) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $post->delete();
+
+        return redirect()->route('posts.myPosts')->with('success', 'Post deleted successfully.');
     }
 
     public function myPosts(): View
     {
         $user = Auth::user();
-        $posts = Post::where('user_id', $user->id)->get();
-        $postCount = $posts->count(); // Count the posts
+        $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(20);
+        $postCount = $posts->total(); // Count the posts
         return view('posts.my_posts', compact('posts', 'user', 'postCount')); // Pass $user and $postCount to the view
     }
 }

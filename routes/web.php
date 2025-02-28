@@ -45,4 +45,11 @@ Route::middleware('auth')->group(function () {
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/connections', [ConnectionController::class, 'index'])->name('connections.index');
+    Route::post('/connections/send/{user}', [ConnectionController::class, 'sendRequest'])->name('connections.send');
+    Route::post('/connections/accept/{user}', [ConnectionController::class, 'acceptRequest'])->name('connections.accept');
+    Route::post('/connections/reject/{user}', [ConnectionController::class, 'rejectRequest'])->name('connections.reject');
+});
+
 require __DIR__ . '/auth.php';

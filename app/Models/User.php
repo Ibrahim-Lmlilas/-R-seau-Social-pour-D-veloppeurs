@@ -44,7 +44,10 @@ class User extends Authenticatable
 
     public function hasSentConnectionRequestTo(User $user)
     {
-        return $this->sentConnectionRequests()->where('connection_id', $user->id)->exists();
+        return $this->connections()
+            ->where('connected_user_id', $user->id)
+            ->where('status', 'pending')
+            ->exists();
     }
 
     /**
@@ -71,9 +74,43 @@ class User extends Authenticatable
 
     public function connections()
     {
-        return $this->belongsToMany(User::class, 'connections', 'user_id', 'connection_id')
-                    ->withPivot('status')
-                    ->wherePivot('status', 'accepted');
+        return $this->hasMany(Connection::class, 'user_id');
+    }
+
+    public function receivedConnections()
+    {
+        return $this->hasMany(Connection::class, 'connected_user_id');
+    }
+
+    public function pendingConnections()
+    {
+        return $this->hasMany(Connection::class, 'connected_user_id')
+                    ->where('status', 'pending');
+    }
+
+    public function acceptedConnections()
+    {
+        return $this->hasMany(Connection::class)
+                    ->where('status', 'accepted');
+    }
+
+    public function getConnectionCount()
+    {
+        return $this->acceptedConnections()->count();
+    }
+
+    public function isConnectedWith(User $user)
+    {
+        return Connection::where('status', Connection::STATUS_ACCEPTED)
+            ->where(function($query) use ($user) {
+                $query->where(function($q) use ($user) {
+                    $q->where('user_id', $this->id)
+                      ->where('connected_user_id', $user->id);
+                })->orWhere(function($q) use ($user) {
+                    $q->where('user_id', $user->id)
+                      ->where('connected_user_id', $this->id);
+                });
+            })->exists();
     }
 
     public function sentConnectionRequests()
@@ -90,8 +127,38 @@ class User extends Authenticatable
                     ->wherePivot('status', 'pending');
     }
 
-    public function Post()
+    public function getConnectionsCountAttribute()
+    {
+        return $this->connections()
+            ->where('status', 'accepted')
+            ->count();
+    }
+
+    public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function isConnectedOrPendingWith(User $user)
+    {
+        return Connection::where(function($query) use ($user) {
+            $query->where(function($q) use ($user) {
+                $q->where('user_id', $this->id)
+                  ->where('connected_user_id', $user->id);
+            })->orWhere(function($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->where('connected_user_id', $this->id);
+            });
+        })->whereIn('status', [Connection::STATUS_PENDING, Connection::STATUS_ACCEPTED])
+          ->exists();
+    }
+
+    public function getConnectionsAttribute()
+    {
+        return Connection::where(function($query) {
+            $query->where('user_id', $this->id)
+                  ->orWhere('connected_user_id', $this->id);
+        })->where('status', Connection::STATUS_ACCEPTED)
+          ->count();
     }
 }

@@ -2,97 +2,90 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-
 use App\Models\User;
 use App\Models\Connection;
-use App\Models\Post;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ConnectionController extends Controller
 {
-    public function sendConnectionRequest(User $user)
+    public function index()
     {
-        $loggedInUser = Auth::user();
+        $user = Auth::user();
 
-        $existingConnection = Connection::where(function ($query) use ($loggedInUser, $user) {
-            $query->where('user_id', $loggedInUser->id)
-                  ->where('connection_id', $user->id);
-        })->orWhere(function ($query) use ($loggedInUser, $user) {
+        // Get users who are not connected or pending with the current user
+        $userss = User::where('id', '!=', $user->id)
+            ->whereNotIn('id', function($query) use ($user) {
+                $query->select('connected_user_id')
+                    ->from('connections')
+                    ->where('user_id', $user->id)
+                    ->whereIn('status', ['accepted', 'pending']);
+            })
+            ->whereNotIn('id', function($query) use ($user) {
+                $query->select('user_id')
+                    ->from('connections')
+                    ->where('connected_user_id', $user->id)
+                    ->whereIn('status', ['accepted', 'pending']);
+            })
+            ->get();
+
+        $pendingRequests = $user->receivedConnections()
+            ->with('user')
+            ->where('status', 'pending')
+            ->get();
+
+        return view('connections.index', compact('user', 'userss', 'pendingRequests'));
+    }
+
+    public function sendRequest(User $user)
+    {
+        // Check if connection already exists
+        $existingConnection = Connection::where(function($query) use ($user) {
+            $query->where('user_id', Auth::id())
+                  ->where('connected_user_id', $user->id);
+        })->orWhere(function($query) use ($user) {
             $query->where('user_id', $user->id)
-                  ->where('connection_id', $loggedInUser->id);
+                  ->where('connected_user_id', Auth::id());
         })->first();
 
         if ($existingConnection) {
-            return back()->with('error', 'Connection request already sent or you are already connected.');
+            return back()->with('error', 'Connection already exists');
         }
 
-        $connection = new Connection();
-        $connection->user_id = $loggedInUser->id;
-        $connection->connection_id = $user->id;
-        $connection->status = 'pending';
-        $connection->save();
+        Connection::create([
+            'user_id' => Auth::id(),
+            'connected_user_id' => $user->id,
+            'status' => Connection::STATUS_PENDING
+        ]);
 
-        return back()->with('success', 'Connection request sent.');
+        return back()->with('success', 'Connection request sent');
     }
 
-    public function acceptConnectionRequest(User $user)
+    public function acceptRequest(User $user)
     {
-        $loggedInUser = Auth::user();
-
         $connection = Connection::where('user_id', $user->id)
-                            ->where('connection_id', $loggedInUser->id)
-                            ->where('status', 'pending')
-                            ->first();
+            ->where('connected_user_id', Auth::id())
+            ->where('status', Connection::STATUS_PENDING)
+            ->first();
 
-        if (!$connection) {
-            return back()->with('error', 'No pending connection request found.');
+        if ($connection) {
+            $connection->update(['status' => Connection::STATUS_ACCEPTED]);
         }
 
-        $connection->status = 'accepted';
-        $connection->save();
-
-        return back()->with('success', 'Connection request accepted.');
+        return back()->with('success', 'Connection accepted successfully');
     }
 
-    public function rejectConnectionRequest(User $user)
+    public function rejectRequest(User $user)
     {
-        $loggedInUser = Auth::user();
-
         $connection = Connection::where('user_id', $user->id)
-                            ->where('connection_id', $loggedInUser->id)
-                            ->where('status', 'pending')
-                            ->first();
+            ->where('connected_user_id', Auth::id())
+            ->where('status', Connection::STATUS_PENDING)
+            ->first();
 
-        if (!$connection) {
-            return back()->with('error', 'No pending connection request found.');
+        if ($connection) {
+            $connection->update(['status' => Connection::STATUS_REJECTED]);
         }
 
-        $connection->status = 'rejected';
-        $connection->save();
-
-        return back()->with('success', 'Connection request rejected.');
-    }
-
-
-
-    public function getConnections()
-    {
-        $loggedInUser = Auth::user();
-        $userss = User::where('id', '!=', Auth::id())->get();
-        $user = $loggedInUser;
-
-        $user = Auth::user();
-        $posts = Post::where('user_id', $user->id)->get();
-        $postCount = $posts->count(); // Count the posts
-        $pendingRequests = Connection::where('connection_id', $loggedInUser->id)
-                                     ->where('status', 'pending')
-                                     ->get();
-        $sentRequests = Connection::where('user_id', $loggedInUser->id)
-                                     ->get();
-        $posts = Post::where('user_id', $loggedInUser->id)->get();
-        $postCount = $posts->count();
-
-        return view('connections.index', compact('userss', 'user', 'pendingRequests', 'sentRequests', 'postCount'));
+        return back()->with('success', 'Connection request rejected');
     }
 }

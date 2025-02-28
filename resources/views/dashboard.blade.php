@@ -178,7 +178,7 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
                                         </svg>
-                                        <span>12</span>
+                                        <span>{{$post->comments->count()}}</span>
                                     </button>
                                 </div>
                                 <button class="text-gray-500 hover:text-blue-500">
@@ -187,6 +187,36 @@
                                     </svg>
                                 </button>
                             </div>
+
+                            <div class="mt-4 border-t pt-4">
+                                <form class="comment-form" data-post-id="{{ $post->id }}">
+                                    @csrf
+                                    <div class="flex items-start space-x-3">
+                                        <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="User" class="w-8 h-8 rounded-full"/>
+                                        <div class="flex-grow">
+                                            <textarea name="content" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Write a comment..."></textarea>
+                                            <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Comment</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <div class="comments-container mt-4 space-y-4">
+                                    @foreach($post->comments()->with('user')->latest()->get() as $comment)
+                                        <div class="flex items-start space-x-3">
+                                            <img src="{{ asset('storage/' . $comment->user->image) }}" alt="User" class="w-8 h-8 rounded-full"/>
+                                            <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                                                <div class="flex items-center justify-between">
+                                                    <h4 class="font-semibold">{{ $comment->user->name }}</h4>
+                                                    <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                                </div>
+                                                <p class="text-gray-700 mt-1">{{ $comment->content }}</p>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
+
+
+                        </div>
 
                         </div>
 
@@ -239,6 +269,47 @@
                         .catch(error => console.error('Error:', error));
                     });
                 });
+
+                document.querySelectorAll('.comment-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const postId = this.dataset.postId;
+                    const textarea = this.querySelector('textarea');
+
+                    fetch(`/posts/${postId}/comments`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            content: textarea.value
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Add the new comment to the list
+                        const commentsContainer = this.nextElementSibling;
+                        const commentHtml = `
+                            <div class="flex items-start space-x-3">
+                                <img src="${data.comment.user.image}" alt="User" class="w-8 h-8 rounded-full"/>
+                                <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="font-semibold">${data.comment.user.name}</h4>
+                                        <span class="text-xs text-gray-500">Just now</span>
+                                    </div>
+                                    <p class="text-gray-700 mt-1">${data.comment.content}</p>
+                                </div>
+                            </div>
+                        `;
+                        commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+
+                        textarea.value = '';
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
                 </script>
             </html>
 

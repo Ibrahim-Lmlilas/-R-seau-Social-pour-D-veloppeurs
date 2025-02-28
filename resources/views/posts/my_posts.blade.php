@@ -48,7 +48,7 @@
                         </div>
                         <p class="text-gray-500 text-sm mt-2">{{ $user->certifications }}</p>
                         <p class="text-gray-500 text-sm mt-2">{{ $user->bio }}</p>
-                    
+
 
                         <div class="mt-4 pt-4 border-t">
 
@@ -188,7 +188,7 @@
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
                                         </svg>
-                                        <span>12</span>
+                                        <span>{{$post->comments->count()}}</span>
                                     </button>
                                 </div>
                                 <button class="text-gray-500 hover:text-blue-500">
@@ -196,6 +196,48 @@
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
                                     </svg>
                                 </button>
+                            </div>
+
+                            <!-- Add this inside your post loop, after the likes section -->
+                            <div class="mt-4 border-t pt-4">
+                                <form class="comment-form" data-post-id="{{ $post->id }}">
+                                    @csrf
+                                    <div class="flex items-start space-x-3">
+                                        <img src="{{ asset('storage/' . Auth::user()->image) }}" alt="User" class="w-8 h-8 rounded-full"/>
+                                        <div class="flex-grow">
+                                            <textarea name="content" class="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Write a comment..."></textarea>
+                                            <button type="submit" class="mt-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Comment</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <!-- Replace the existing comment display section -->
+                                <div class="comments-container mt-4 space-y-4">
+                                    @foreach($post->comments()->with('user')->latest()->get() as $comment)
+                                        <div class="flex items-start space-x-3 comment-item" id="comment-{{ $comment->id }}">
+                                            <img src="{{ asset('storage/' . $comment->user->image) }}" alt="User" class="w-8 h-8 rounded-full"/>
+                                            <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                                                <div class="flex items-center justify-between">
+                                                    <div>
+                                                        <h4 class="font-semibold">{{ $comment->user->name }}</h4>
+                                                        <span class="text-xs text-gray-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                                    </div>
+                                                    @if(Auth::id() === $comment->user_id)
+                                                        <button
+                                                            class="delete-comment text-gray-400 hover:text-red-500"
+                                                            data-comment-id="{{ $comment->id }}"
+                                                        >
+                                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                            </svg>
+                                                        </button>
+                                                    @endif
+                                                </div>
+                                                <p class="text-gray-700 mt-1">{{ $comment->content }}</p>
+                                            </div>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
 
                         </div>
@@ -234,22 +276,90 @@
                     })
                     .then(response => response.json())
                     .then(data => {
-                        // Update likes count
                         likesCount.textContent = data.likes_count;
 
-                        // Toggle like button appearance
                         if (data.liked) {
-                            svg.classList.add('text-blue-500');
                             svg.setAttribute('fill', 'currentColor');
+                            svg.classList.add('text-blue-500');
                         } else {
-                            svg.classList.remove('text-blue-500');
                             svg.setAttribute('fill', 'none');
+                            svg.classList.remove('text-blue-500');
                         }
                     })
                     .catch(error => console.error('Error:', error));
                 });
             });
-            </script>
-            </html>
 
-    </x-app-layout>
+            document.querySelectorAll('.comment-form').forEach(form => {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const postId = this.dataset.postId;
+                    const textarea = this.querySelector('textarea');
+
+                    fetch(`/posts/${postId}/comments`, {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Accept': 'application/json',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            content: textarea.value
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Add the new comment to the list
+                        const commentsContainer = this.nextElementSibling;
+                        const commentHtml = `
+                            <div class="flex items-start space-x-3">
+                                <img src="${data.comment.user.image}" alt="User" class="w-8 h-8 rounded-full"/>
+                                <div class="flex-grow bg-gray-50 rounded-lg p-3">
+                                    <div class="flex items-center justify-between">
+                                        <h4 class="font-semibold">${data.comment.user.name}</h4>
+                                        <span class="text-xs text-gray-500">Just now</span>
+                                    </div>
+                                    <p class="text-gray-700 mt-1">${data.comment.content}</p>
+                                </div>
+                            </div>
+                        `;
+                        commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+
+                        textarea.value = '';
+                    })
+                    .catch(error => console.error('Error:', error));
+                });
+            });
+
+            // Add this to your existing script section
+            document.querySelectorAll('.delete-comment').forEach(button => {
+                button.addEventListener('click', function() {
+                    if (confirm('Are you sure you want to delete this comment?')) {
+                        const commentId = this.dataset.commentId;
+
+                        fetch(`/comments/${commentId}`, {
+                            method: 'DELETE',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                document.getElementById(`comment-${commentId}`).remove();
+
+                                // Update comment count
+                                const commentCountElement = button.closest('.bg-white').querySelector('.flex.items-center.space-x-4 span:last-child');
+                                const currentCount = parseInt(commentCountElement.textContent);
+                                commentCountElement.textContent = currentCount - 1;
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    }
+                });
+            });
+        </script>
+</html>
+</x-app-layout>

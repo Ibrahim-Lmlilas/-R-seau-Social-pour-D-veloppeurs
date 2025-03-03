@@ -17,6 +17,7 @@ Route::get('/dashboard', [PostController::class, 'index'])->middleware(['auth', 
 
 
 use App\Http\Controllers\ConnectionController;
+use App\Http\Controllers\NotificationController;
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -50,6 +51,15 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/connections/send/{user}', [ConnectionController::class, 'sendRequest'])->name('connections.send');
     Route::post('/connections/accept/{user}', [ConnectionController::class, 'acceptRequest'])->name('connections.accept');
     Route::post('/connections/reject/{user}', [ConnectionController::class, 'rejectRequest'])->name('connections.reject');
+});
+
+// Notification routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{notification}', [NotificationController::class, 'destroy'])->name('notifications.destroy');
+    Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
 });
 
 require __DIR__ . '/auth.php';

@@ -53,7 +53,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/connections/reject/{user}', [ConnectionController::class, 'rejectRequest'])->name('connections.reject');
 });
 
-// Notification routes
+Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show')->middleware('auth');
+
 Route::middleware(['auth'])->group(function () {
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/{notification}/mark-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-read');

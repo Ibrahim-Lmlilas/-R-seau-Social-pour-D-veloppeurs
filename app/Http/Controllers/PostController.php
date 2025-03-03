@@ -61,9 +61,9 @@ class PostController extends Controller
         return redirect()->route('dashboard');
     }
 
-    public function show(string $id)
+    public function show(Post $post)
     {
-        //
+        return view('posts.show', compact('post'));
     }
 
     public function edit(string $id)

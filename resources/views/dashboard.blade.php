@@ -415,21 +415,17 @@
                 }
 
                 function copyToClipboard(text) {
-                    // Create a temporary input element
                     const input = document.createElement('input');
                     input.style.position = 'fixed';
                     input.style.opacity = '0';
                     input.value = text;
                     document.body.appendChild(input);
 
-                    // Select and copy the text
                     input.select();
                     document.execCommand('copy');
 
-                    // Remove the temporary element
                     document.body.removeChild(input);
 
-                    // Show feedback
                     alert('Link copied to clipboard!');
                 }
                 </script>

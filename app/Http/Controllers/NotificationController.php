@@ -19,15 +19,9 @@ class NotificationController extends Controller
         return view('notifications.index', compact('notifications'));
     }
 
-    /**
-     * Mark a notification as read.
-     *
-     * @param  \App\Models\Notification  $notification
-     * @return \Illuminate\Http\RedirectResponse
-     */
+
     public function markAsRead(Notification $notification)
     {
-        // Check if the notification belongs to the current user
         if ($notification->user_id !== Auth::id()) {
             abort(403);
         }
@@ -39,11 +33,7 @@ class NotificationController extends Controller
         return redirect()->back()->with('success', 'Notification marked as read');
     }
 
-    /**
-     * Mark all notifications as read.
-     *
-     * @return \Illuminate\Http\RedirectResponse
-     */
+
     public function markAllAsRead()
     {
         Auth::user()->notifications()
@@ -53,12 +43,7 @@ class NotificationController extends Controller
         return redirect()->back()->with('success', 'All notifications marked as read');
     }
 
-    /**
-     * Delete a notification.
-     *
-     * @param  \App\Models\Notification  $notification
-     * @return \Illuminate\Http\RedirectResponse
-     */
+
     public function destroy(Notification $notification)
     {
         // Check if the notification belongs to the current user
@@ -71,11 +56,7 @@ class NotificationController extends Controller
         return redirect()->back()->with('success', 'Notification deleted');
     }
 
-    /**
-     * Get unread notifications count.
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
+
     public function unreadCount()
     {
         $count = Auth::user()->notifications()->where('is_read', false)->count();

@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use App\Services\PostService;
+use App\Models\Notification;
 
 class PostController extends Controller
 {
@@ -107,7 +108,7 @@ class PostController extends Controller
     {
         $user = Auth::user();
         $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10);
-        $postCount = $posts->total(); // Count the posts
+        $postCount = $posts->total(); 
         return view('posts.my_posts', compact('posts', 'user', 'postCount')); // Pass $user and $postCount to the view
     }
 
@@ -123,6 +124,18 @@ class PostController extends Controller
                 'user_id' => $user->id
             ]);
             $liked = true;
+
+            //  notification
+            if ($user->id !== $post->user_id) {
+                Notification::create([
+                    'user_id' => $post->user_id,
+                    'sender_id' => $user->id,
+                    'message' => $user->name . ' liked your post',
+                    'type' => 'like',
+                    'notifiable_type' => 'post',
+                    'notifiable_id' => $post->id,
+                ]);
+            }
         }
 
         return response()->json([

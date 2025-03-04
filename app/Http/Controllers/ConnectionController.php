@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Connection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
 
 class ConnectionController extends Controller
 {
@@ -56,6 +57,16 @@ class ConnectionController extends Controller
             'user_id' => Auth::id(),
             'connected_user_id' => $user->id,
             'status' => Connection::STATUS_PENDING
+        ]);
+
+        // Create notification
+        Notification::create([
+            'user_id' => $user->id,
+            'sender_id' => Auth::id(),
+            'message' => Auth::user()->name . ' sent you a connection request',
+            'type' => 'connection_request',
+            'notifiable_type' => 'user',
+            'notifiable_id' => $user->id,
         ]);
 
         return back()->with('success', 'Connection request sent');

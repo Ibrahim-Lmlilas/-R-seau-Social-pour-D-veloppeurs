@@ -22,9 +22,5 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        Event::listen(
-            CommentCreated::class,
-            [CreateCommentNotification::class, 'handle']
-        );
     }
 }

@@ -28,7 +28,7 @@
                                     <div class="flex justify-between items-center">
                                         <div class="flex items-start space-x-3">
                                             @if($notification->sender)
-                                                <img src="{{ $notification->sender->avatar ?? asset('images/default-avatar.png') }}"
+                                                <img src="{{ $notification->user->image  }}"
                                                      alt="Avatar" class="w-10 h-10 rounded-full">
                                                 <div>
                                                     <p class="font-medium">{{ $notification->sender->name }}</p>

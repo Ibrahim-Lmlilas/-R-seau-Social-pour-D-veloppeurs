@@ -30,7 +30,7 @@
                 @auth
                     @php
                         $unreadCount = auth()->user()->notifications()->where('is_read', false)->count();
-                        $notifications = auth()->user()->notifications()->with('sender')->orderBy('created_at', 'desc')->limit(5)->get();
+                        $notifications = auth()->user()->notifications()->with('sender')->orderBy('created_at', 'desc')->limit(2)->get();
                     @endphp
                     <x-notification-dropdown :unreadCount="$unreadCount" :notifications="$notifications" />
                 @endauth

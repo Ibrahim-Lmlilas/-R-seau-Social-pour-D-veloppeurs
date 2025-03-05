@@ -3,20 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Notification;
+use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
-
     public function index()
     {
-        $notifications = Auth::user()->notifications()
-            ->with(['sender', 'notifiable'])
-            ->orderBy('created_at', 'desc');
+        try {
+            $notifications = Auth::user()->notifications()
+                ->orderBy('created_at', 'desc')
+                ->paginate(10);
 
+            
 
-        return view('notifications.index', compact('notifications'));
+            return view('notifications.index', compact('notifications'));
+        } catch (\Exception $e) {
+
+            Log::error("message");('Notification error: ' . $e->getMessage());
+            return view('notifications.index', ['notifications' => collect()]);
+        }
     }
 
 

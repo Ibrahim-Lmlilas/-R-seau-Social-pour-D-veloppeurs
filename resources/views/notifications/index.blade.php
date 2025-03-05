@@ -1,4 +1,10 @@
-
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DevConnect - Social Network for Developers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+</head>
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
@@ -15,7 +21,7 @@
                             <form action="{{ route('notifications.mark-all-read') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                                    {{ __('Mark aly as read') }}
+                                    {{ __('Mark all as read') }}
                                 </button>
                             </form>
                         </div>
@@ -63,9 +69,7 @@
                             @endforeach
                         </div>
 
-                        <div class="mt-6">
-                            {{ $notifications->links() }}
-                        </div>
+
                     @else
                         <p class="text-center py-6">{{ __('No notifications') }}</p>
                     @endif

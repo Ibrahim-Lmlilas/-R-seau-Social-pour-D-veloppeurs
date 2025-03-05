@@ -35,7 +35,8 @@
                class="block px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-600 {{ $notification->is_read ? '' : 'bg-blue-50 dark:bg-gray-600' }}">
                 <div class="flex">
                     @if($notification->sender)
-                        <img src="{{ $notification->sender->avatar ?? asset('images/default-avatar.png') }}"
+                        {{-- <img src="{{ $notification->sender->image ?? asset('storage/default-avatar.png') }}" --}}
+                        <img src="{{ asset('storage/' . $notification->sender->image) }}"
                              class="h-10 w-10 rounded-full mr-3" alt="{{ $notification->sender->name }}">
                     @endif
                     <div class="flex-1">

@@ -22,13 +22,13 @@ class CommentController extends Controller
             'content' => $validated['content'],
             'user_id' => auth()->id(),
         ]);
-        // notification 
+        // notification
         if ($user->id !== $post->user_id) {
             Notification::create([
                 'user_id' => $post->user_id,
                 'sender_id' => $user->id,
                 'message' => $user->name . 'commented your post',
-                'type' => 'like',
+                'type' => 'comment',
                 'notifiable_type' => 'post',
                 'notifiable_id' => $post->id,
             ]);

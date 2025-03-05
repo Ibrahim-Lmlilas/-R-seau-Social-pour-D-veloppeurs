@@ -15,7 +15,7 @@
                             <form action="{{ route('notifications.mark-all-read') }}" method="POST">
                                 @csrf
                                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700">
-                                    {{ __('Mark all as read') }}
+                                    {{ __('Mark aly as read') }}
                                 </button>
                             </form>
                         </div>
@@ -28,8 +28,7 @@
                                     <div class="flex justify-between items-center">
                                         <div class="flex items-start space-x-3">
                                             @if($notification->sender)
-                                                <img src="{{ $notification->user->image  }}"
-                                                     alt="Avatar" class="w-10 h-10 rounded-full">
+
                                                 <div>
                                                     <p class="font-medium">{{ $notification->sender->name }}</p>
                                                     <p>{{ $notification->message }}</p>

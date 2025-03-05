@@ -13,8 +13,8 @@ class NotificationController extends Controller
     {
         $notifications = Auth::user()->notifications()
             ->with(['sender', 'notifiable'])
-            ->orderBy('created_at', 'desc')
-            ->paginate(10);
+            ->orderBy('created_at', 'desc');
+
 
         return view('notifications.index', compact('notifications'));
     }

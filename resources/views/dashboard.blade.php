@@ -60,7 +60,8 @@
                         @csrf
                         <div class="flex items-center space-x-4">
                             <img src="{{ asset('storage/' . $user->image) }}" alt="User" class="w-12 h-12 rounded-full"/>
-                            <h1 class="font-semibold"   >Create Post</h1>
+                            <input id="searchInput" type="search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Search posts, users, or hashtags...">
+
                         </div>
                         <div class="flex justify-between mt-4 pt-4 border-t">
                             <a href="{{ route('posts.createCode') }}" name="post_type" value="code" class="flex items-center space-x-2 text-gray-500 hover:bg-gray-100 px-4 py-2 rounded-lg transition-colors duration-200">
@@ -87,7 +88,7 @@
 
                 <!-- Posts -->
 @foreach ($posts as $post )
-                <div class="bg-white rounded-xl shadow-sm mt-12 ">
+                <div class="bg-white rounded-xl shadow-sm mt-12 post">
 
                     <div class="p-4">
                         <div class="flex items-center justify-between">
@@ -131,8 +132,8 @@
                         </div>
 
                         <div class="mt-4">
-                            <h3 class="font-semibold">{{ $post->title }}</h3>
-                            <p class="text-gray-700">{{$post->description}}</p>
+                            <h3 class="font-semibold post-title">{{ $post->title }}</h3>
+                            <p class="text-gray-700 post-content">{{$post->description}}</p>
 
                             <div class="bg-white rounded-xl shadow-sm">
                                 <div class="p-4">
@@ -428,6 +429,42 @@
 
                     alert('Link copied to clipboard!');
                 }
+
+
+
+
+        // Add this to your existing script section at the bottom
+                document.addEventListener('DOMContentLoaded', function() {
+                    const searchInput = document.getElementById('searchInput');
+                    if (searchInput) {
+                        searchInput.addEventListener('keyup', function() {
+                            const searchValue = this.value.toLowerCase();
+                            const posts = document.querySelectorAll('.post');
+
+                            posts.forEach(post => {
+                                // Get text content from various elements in the post
+                                const postContent = post.querySelector('.post-content')?.textContent.toLowerCase() || '';
+                                const userName = post.querySelector('.font-semibold')?.textContent.toLowerCase() || '';
+                                const hashtagElements = post.querySelectorAll('.text-blue-800');
+                                let hashtagText = '';
+
+                                // Combine all hashtag text
+                                hashtagElements.forEach(tag => {
+                                    hashtagText += ' ' + tag.textContent.toLowerCase();
+                                });
+
+                                // Search in content, username, and hashtags
+                                if (postContent.includes(searchValue) ||
+                                    userName.includes(searchValue) ||
+                                    hashtagText.includes(searchValue)) {
+                                    post.style.display = '';
+                                } else {
+                                    post.style.display = 'none';
+                                }
+                            });
+                        });
+                    }
+                });
                 </script>
 
 

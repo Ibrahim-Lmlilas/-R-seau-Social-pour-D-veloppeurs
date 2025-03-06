@@ -108,39 +108,9 @@ class PostController extends Controller
     {
         $user = Auth::user();
         $posts = Post::where('user_id', $user->id)->orderBy('created_at', 'desc')->paginate(10);
-        $postCount = $posts->total(); 
+        $postCount = $posts->total();
         return view('posts.my_posts', compact('posts', 'user', 'postCount')); // Pass $user and $postCount to the view
     }
 
-    public function like(Post $post)
-    {
-        $user = Auth::user();
-        $liked = false;
-
-        if ($post->likes()->where('user_id', $user->id)->exists()) {
-            $post->likes()->where('user_id', $user->id)->delete();
-        } else {
-            $post->likes()->create([
-                'user_id' => $user->id
-            ]);
-            $liked = true;
-
-            //  notification
-            if ($user->id !== $post->user_id) {
-                Notification::create([
-                    'user_id' => $post->user_id,
-                    'sender_id' => $user->id,
-                    'message' => $user->name . ' liked your post',
-                    'type' => 'like',
-                    'notifiable_type' => 'post',
-                    'notifiable_id' => $post->id,
-                ]);
-            }
-        }
-
-        return response()->json([
-            'likes_count' => $post->likes()->count(),
-            'liked' => $liked
-        ]);
-    }
+    
 }

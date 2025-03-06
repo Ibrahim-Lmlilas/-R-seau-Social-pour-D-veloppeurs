@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DevConnect - Social Network for Developers</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .like-button.liked svg {
+            fill: #3b82f6;
+            stroke: #000000;
+        }
+    </style>
 </head>
 <body class="bg-gray-50">
     <!-- Navigation -->
@@ -174,15 +180,12 @@
 
                             <div class="mt-4 flex items-center justify-between border-t pt-4">
                                 <div class="flex items-center space-x-4">
-                                    <form method="POST" action="{{ route('posts.like', $post->id) }}" class="like-form">
-                                        @csrf
-                                    <button class="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
-                                        <svg class="w-5 h-5 {{ $post->likes()->where('user_id', Auth::user()->id)->exists() ? 'text-blue-500' : '' }}" fill="{{ $post->likes()->where('user_id', Auth::user()->id)->exists() ? 'currentColor' : 'none' }}" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"/>
+                                    <button class="like-button" data-post-id="{{ $post->id }}">
+                                        <svg class="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                                         </svg>
-                                        <span class="likes-count">{{ $post->likes()->count() }}</span>
                                     </button>
-                                </form>
+                                    <span class="likes-count text-gray-500" data-post-id="{{ $post->id }}">{{ $post->likes()->count() }}</span>
 
                                     <button class="flex items-center space-x-2 text-gray-500 hover:text-blue-500">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -191,6 +194,7 @@
                                         <span>{{$post->comments->count()}}</span>
                                     </button>
                                 </div>
+                                <!-- Share button -->
                                 <button class="text-gray-500 hover:text-blue-500">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/>
@@ -258,35 +262,52 @@
                 </div>
             </body>
                         <script>
-            document.querySelectorAll('.like-form').forEach(form => {
-                form.addEventListener('submit', function(e) {
-                    e.preventDefault();
+            // Add like button functionality
+            document.addEventListener('DOMContentLoaded', function() {
+                const likeButtons = document.querySelectorAll('.like-button');
 
-                    const button = this.querySelector('button');
-                    const likesCount = button.querySelector('.likes-count');
-                    const svg = button.querySelector('svg');
-
-                    fetch(this.action, {
-                        method: 'POST',
+                likeButtons.forEach(button => {
+                    // Check if post is already liked by user and add class
+                    fetch(`/posts/${button.dataset.postId}/check-like`, {
+                        method: 'GET',
                         headers: {
                             'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Accept': 'application/json',
-                        },
-                        body: new FormData(this)
+                            'Accept': 'application/json'
+                        }
                     })
                     .then(response => response.json())
                     .then(data => {
-                        likesCount.textContent = data.likes_count;
-
                         if (data.liked) {
-                            svg.setAttribute('fill', 'currentColor');
-                            svg.classList.add('text-blue-500');
-                        } else {
-                            svg.setAttribute('fill', 'none');
-                            svg.classList.remove('text-blue-500');
+                            button.classList.add('liked');
                         }
-                    })
-                    .catch(error => console.error('Error:', error));
+                    });
+
+                    button.addEventListener('click', function() {
+                        const postId = this.dataset.postId;
+                        const likeCountElement = document.querySelector(`.likes-count[data-post-id="${postId}"]`);
+
+                        fetch(`/posts/${postId}/like`, {
+                            method: 'POST',
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            // Update like count
+                            likeCountElement.textContent = data.likes_count;
+
+                            // Update like button appearance
+                            if (data.liked) {
+                                this.classList.add('liked');
+                            } else {
+                                this.classList.remove('liked');
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
                 });
             });
 

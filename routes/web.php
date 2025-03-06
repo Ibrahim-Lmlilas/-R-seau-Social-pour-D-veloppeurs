@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\CommentController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\PostController;
@@ -41,7 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/create/image', [PostController::class, 'createImage'])->name('posts.createImage');
     Route::post('/posts/store/image', [PostController::class, 'storeImage'])->name('posts.storeImage');
 
-    Route::post('/posts/{post}/like', [PostController::class, 'like'])->name('posts.like')->middleware('auth');
+    Route::post('/posts/{post}/like', [LikeController::class, 'like'])->middleware('auth')->name('posts.like');
     Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('posts.comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
@@ -63,4 +64,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
 });
 
+// Add these routes to your existing web.php file
+Route::middleware(['auth'])->group(function () {
+    // Chat routes
+    Route::get('/chat', [ChatController::class, 'index'])->name('chat');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+});
+
 require __DIR__ . '/auth.php';
+
+Route::get('/posts/{post}/check-like', [App\Http\Controllers\LikeController::class, 'checkLike'])->middleware('auth')->name('posts.checkLike');
+Route::post('/posts/{post}/like', [App\Http\Controllers\LikeController::class, 'like'])->middleware('auth')->name('posts.like');

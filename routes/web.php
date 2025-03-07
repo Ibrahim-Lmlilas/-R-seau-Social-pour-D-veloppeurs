@@ -7,6 +7,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\LikeController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ConnectionController;
+use App\Http\Controllers\NotificationController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -17,8 +19,7 @@ use Illuminate\Support\Facades\Auth;
 Route::get('/dashboard', [PostController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
 
 
-use App\Http\Controllers\ConnectionController;
-use App\Http\Controllers\NotificationController;
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -42,7 +43,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/posts/create/image', [PostController::class, 'createImage'])->name('posts.createImage');
     Route::post('/posts/store/image', [PostController::class, 'storeImage'])->name('posts.storeImage');
 
-    Route::post('/posts/{post}/like', [LikeController::class, 'like'])->middleware('auth')->name('posts.like');
     Route::post('/posts/{post}/comments', [CommentController::class, 'store'])->name('posts.comments.store');
     Route::delete('/comments/{comment}', [CommentController::class, 'destroy'])->name('comments.destroy');
 });
@@ -54,6 +54,17 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/connections/reject/{user}', [ConnectionController::class, 'rejectRequest'])->name('connections.reject');
 });
 
+Route::get('/posts/{post}/check-like', [LikeController::class, 'checkLike'])->middleware('auth')->name('posts.checkLike');
+Route::post('/posts/{post}/like', [LikeController::class, 'like'])->middleware('auth')->name('posts.like');
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/chat/{user_id?}', [ChatController::class, 'index'])->name('chat');
+    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
+    Route::post('/chat/mark-as-read/{messageId}', [ChatController::class, 'markAsRead'])->name('chat.markAsRead');
+});
+
+
 Route::get('/posts/{post}', [PostController::class, 'show'])->name('posts.show')->middleware('auth');
 
 Route::middleware(['auth'])->group(function () {
@@ -64,14 +75,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/notifications/unread-count', [NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
 });
 
-// Add these routes to your existing web.php file
-Route::middleware(['auth'])->group(function () {
-    // Chat routes
-    Route::get('/chat', [ChatController::class, 'index'])->name('chat');
-    Route::post('/chat/send', [ChatController::class, 'sendMessage'])->name('chat.send');
-});
+
 
 require __DIR__ . '/auth.php';
 
-Route::get('/posts/{post}/check-like', [App\Http\Controllers\LikeController::class, 'checkLike'])->middleware('auth')->name('posts.checkLike');
-Route::post('/posts/{post}/like', [App\Http\Controllers\LikeController::class, 'like'])->middleware('auth')->name('posts.like');

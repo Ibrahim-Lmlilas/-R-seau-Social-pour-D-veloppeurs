@@ -6,6 +6,7 @@ use App\Models\Notification;
 use Illuminate\Container\Attributes\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Events\NewNotification;
 
 class NotificationController extends Controller
 {
@@ -16,7 +17,7 @@ class NotificationController extends Controller
                 ->orderBy('created_at', 'desc')
                 ->paginate(10);
 
-            
+
 
             return view('notifications.index', compact('notifications'));
         } catch (\Exception $e) {
@@ -69,5 +70,23 @@ class NotificationController extends Controller
         $count = Auth::user()->notifications()->where('is_read', false)->count();
 
         return response()->json(['count' => $count]);
+    }
+
+    // Add this method to create and broadcast a notification
+    public function createNotification($userId, $senderId, $message, $type, $notifiableType, $notifiableId)
+    {
+        $notification = Notification::create([
+            'user_id' => $userId,
+            'sender_id' => $senderId,
+            'message' => $message,
+            'type' => $type,
+            'notifiable_type' => $notifiableType,
+            'notifiable_id' => $notifiableId,
+        ]);
+
+        // Broadcast the notification
+        event(new NewNotification($notification));
+
+        return $notification;
     }
 }

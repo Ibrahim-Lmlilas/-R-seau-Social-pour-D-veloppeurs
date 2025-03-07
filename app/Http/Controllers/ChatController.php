@@ -8,6 +8,7 @@ use App\Models\Connection;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Events\NewChatMessage;
 
 class ChatController extends Controller
 {
@@ -15,7 +16,6 @@ class ChatController extends Controller
     {
         $user = Auth::user();
 
-        // Get all connections (friends) of the current user
         $connections = Connection::where(function($query) use ($user) {
                 $query->where('user_id', $user->id)
                     ->orWhere('connected_user_id', $user->id);
@@ -23,7 +23,6 @@ class ChatController extends Controller
             ->where('status', 'accepted')
             ->get();
 
-        // Extract user IDs from connections
         $connectionUserIds = [];
         foreach ($connections as $connection) {
             if ($connection->user_id == $user->id) {
@@ -33,23 +32,19 @@ class ChatController extends Controller
             }
         }
 
-        // Get users from these connections
         $connectionUsers = User::whereIn('id', $connectionUserIds)->get();
 
-        // Get the selected user for chat (if any)
         $receiverId = request('user_id');
         $receiver = null;
 
         if ($receiverId && in_array($receiverId, $connectionUserIds)) {
             $receiver = User::find($receiverId);
 
-            // Mark messages as read
             Message::where('user_id', $receiverId)
                 ->where('receiver_id', $user->id)
                 ->where('is_read', false)
                 ->update(['is_read' => true]);
 
-            // Get messages between the current user and selected user
             $messages = Message::where(function($query) use ($user, $receiverId) {
                     $query->where('user_id', $user->id)
                         ->where('receiver_id', $receiverId);
@@ -64,7 +59,6 @@ class ChatController extends Controller
             $messages = collect();
         }
 
-        // Get unread message counts for each connection
         $unreadCounts = [];
         foreach ($connectionUserIds as $connectionId) {
             $count = Message::where('user_id', $connectionId)
@@ -77,6 +71,8 @@ class ChatController extends Controller
         return view('chat.index', compact('connectionUsers', 'messages', 'receiver', 'unreadCounts'));
     }
 
+
+    //  broadcasting
     public function sendMessage(Request $request)
     {
         $request->validate([
@@ -86,7 +82,7 @@ class ChatController extends Controller
 
         $user = Auth::user();
 
-        // Check if the receiver is a connection of the current user
+        // Check  connection
         $isConnection = Connection::where(function($query) use ($user, $request) {
                 $query->where('user_id', $user->id)
                     ->where('connected_user_id', $request->receiver_id);
@@ -109,13 +105,51 @@ class ChatController extends Controller
             'is_read' => false
         ]);
 
+        // Broadcast the new message event to the receiver
+        event(new NewChatMessage($message));
 
+        // Format the response for the frontend
         return response()->json([
             'id' => $message->id,
             'message' => $message->message,
             'created_at' => $message->created_at->format('H:i'),
             'user_id' => $user->id,
-            'user_name' => $user->name
+            'user_name' => $user->name,
+            'is_read' => false
         ]);
+    }
+
+
+    public function send(Request $request)
+    {
+        $request->validate([
+            'receiver_id' => 'required|exists:users,id',
+            'message' => 'required|string'
+        ]);
+
+        $message = Message::create([
+            'user_id' => Auth::id(),
+            'receiver_id' => $request->receiver_id,
+            'message' => $request->message,
+            'is_read' => false
+        ]);
+
+        $message->load('user');
+
+        event(new NewChatMessage($message));
+
+        return response()->json($message);
+    }
+
+    public function markAsRead($messageId)
+    {
+        $message = Message::findOrFail($messageId);
+
+        if ($message->receiver_id == Auth::id()) {
+            $message->is_read = true;
+            $message->save();
+        }
+
+        return response()->json(['success' => true]);
     }
 }

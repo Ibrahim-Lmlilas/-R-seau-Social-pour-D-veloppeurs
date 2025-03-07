@@ -16,10 +16,14 @@
         </x-slot>
         <!-- Main Content -->
     <div class="max-w-7xl mx-auto pt-8 px-4">
+
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+
             <!-- Profile Card -->
             <div class="space-y-6 flex flex-col lg:col-span-1 lg:row-span-2">
+
                 <div class="bg-white rounded-xl shadow-sm overflow-hidden">
+
                     <div class="relative">
                         <div class="h-24 bg-gradient-to-r from-blue-600 to-blue-400 relative overflow-hidden">
                             <img src="{{ asset('storage/'.$user->banner) }}" alt="Description" class="absolute inset-0 w-full h-full object-cover">
@@ -74,10 +78,13 @@
             <!-- Main Feed -->
 
 
-
                 <!-- Right Sidebar -->
                      <!-- Main Content Area -->
             <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm p-4">
+                    <input id="searchInput" type="search" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5" placeholder="Search posts, users, or hashtags...">
+
+                </div>
                 <!-- Pending Requests Section -->
                 @if(count($pendingRequests) > 0)
                     <div class="bg-white rounded-xl shadow-sm p-6 transform transition-all hover:shadow-md">
@@ -97,7 +104,7 @@
                                                  alt="{{ $request->user->name }}"
                                                  class="w-12 h-12 rounded-full object-cover border border-gray-200"/>
                                             <div>
-                                                <h4 class="font-medium text-gray-900">{{ $request->user->name }}</h4>
+                                                <h4 class= "name font-medium text-gray-900">{{ $request->user->name }}</h4>
                                                 <p class="text-gray-500 text-sm">{{ $request->user->industry }}</p>
                                             </div>
                                         </div>
@@ -131,22 +138,22 @@
                 @endif
 
                 <!-- Suggested Connections -->
-                <div class="bg-white rounded-xl shadow-sm p-6 transform transition-all hover:shadow-md">
+                <div class= "user  bg-white rounded-xl shadow-sm p-6 transform transition-all hover:shadow-md">
                     <h3 class="text-lg font-semibold mb-4 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2 text-green-500" viewBox="0 0 20 20" fill="currentColor">
                             <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z" />
                         </svg>
                         People You May Know
                     </h3>
-                    <div class="divide-y divide-gray-200">
+                    <div class="user divide-y divide-gray-200">
                         @forelse($userss as $otherUser)
-                            <div class="py-4 flex items-center justify-between hover:bg-gray-50 rounded-lg px-2 transition-colors duration-200">
+                            <div class="name py-4 flex items-center justify-between hover:bg-gray-50 rounded-lg px-2 transition-colors duration-200">
                                 <div class="flex items-center space-x-4">
                                     <img src="{{ asset('storage/' . $otherUser->image) }}"
                                          alt="{{ $otherUser->name }}"
                                          class="w-12 h-12 rounded-full object-cover border border-gray-200"/>
                                     <div>
-                                        <h4 class="font-medium text-gray-900">{{ $otherUser->name }}</h4>
+                                        <h4 class=" font-medium text-gray-800">{{ $otherUser->name }}</h4>
                                         <p class="text-gray-500 text-sm">{{ $otherUser->industry }}</p>
                                         @if($otherUser->skills)
                                             <div class="mt-1 flex flex-wrap gap-1">
@@ -201,6 +208,20 @@
 
                 </div>
             </body>
+            <script>
+                document.getElementById('searchInput').addEventListener('keyup', function() {
+                const searchValue = this.value.toLowerCase();
+                const posts = document.querySelectorAll('.user');
+
+                posts.forEach(post => {
+                    const postContent = post.querySelector('.name ').textContent.toLowerCase();
+                    const userName = post.querySelector('h4').textContent.toLowerCase();
+                    const hashtags = post.querySelector('p.text-blue-800')?.textContent.toLowerCase()  '';
+
+
+                });
+            });
+            </script>
 
 </html>
 </x-app-layout>

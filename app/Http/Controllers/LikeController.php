@@ -14,13 +14,11 @@ class LikeController extends Controller
     {
         $user = Auth::user();
 
-        // Check if the user has already liked the post
         $existingLike = Like::where('user_id', $user->id)
                             ->where('post_id', $post->id)
                             ->first();
 
         if ($existingLike) {
-            // Remove the like if it already exists
             $existingLike->delete();
             $liked = false;
         } else {
@@ -31,16 +29,15 @@ class LikeController extends Controller
             ]);
             $liked = true;
 
-            // notification
             if ($user->id !== $post->user_id) {
-                Notification::create([
-                    'user_id' => $post->user_id,
-                    'sender_id' => $user->id,
-                    'message' => $user->name . ' liked your post',
-                    'type' => 'like',
-                    'notifiable_type' => 'post',
-                    'notifiable_id' => $post->id,
-                ]);
+                app(NotificationController::class)->createNotification(
+                    $post->user_id,
+                    $user->id,
+                    $user->name . ' liked your post',
+                    'like',
+                    'post',
+                    $post->id
+                );
             }
         }
 

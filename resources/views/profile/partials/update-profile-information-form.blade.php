@@ -49,28 +49,139 @@
 
         <div>
             <x-input-label for="skills" :value="__('Skills')" />
-            <x-text-input id="skills" name="skills" type="text" class="mt-1 block w-full" :value="old('skills', $user->skills)" autocomplete="skills" />
+            <div id="skills-container" class="space-y-2">
+                @if($user->skills)
+                    @php
+                        $skillsArray = explode(',', $user->skills);
+                    @endphp
+                    @foreach($skillsArray as $index => $skill)
+                        <div class="skill-input-group flex items-center">
+                            <x-text-input name="skills[]" type="text" class="mt-1 block w-full" value="{{ trim($skill) }}" />
+                            <button type="button" class="remove-skill ml-2 px-2 py-1 bg-red-500 text-white rounded-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="skill-input-group flex items-center">
+                        <x-text-input name="skills[]" type="text" class="mt-1 block w-full" placeholder="e.g. JavaScript" />
+                        <button type="button" class="remove-skill ml-2 px-2 py-1 bg-red-500 text-white rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                @endif
+            </div>
+            <button type="button" id="add-skill" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md text-sm">
+                {{ __('+ Add Skill') }}
+            </button>
             <x-input-error class="mt-2" :messages="$errors->get('skills')" />
         </div>
 
         <div>
             <x-input-label for="programming_languages" :value="__('Programming Languages')" />
-            <x-text-input id="programming_languages" name="programming_languages" type="text" class="mt-1 block w-full" :value="old('programming_languages', $user->programming_languages)" autocomplete="programming_languages" />
+            <div id="languages-container" class="space-y-2">
+                @if($user->programming_languages)
+                    @php
+                        $languagesArray = explode(',', $user->programming_languages);
+                    @endphp
+                    @foreach($languagesArray as $index => $language)
+                        <div class="language-input-group flex items-center">
+                            <x-text-input name="programming_languages[]" type="text" class="mt-1 block w-full" value="{{ trim($language) }}" />
+                            <button type="button" class="remove-language ml-2 px-2 py-1 bg-red-500 text-white rounded-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="language-input-group flex items-center">
+                        <x-text-input name="programming_languages[]" type="text" class="mt-1 block w-full" placeholder="e.g. Python" />
+                        <button type="button" class="remove-language ml-2 px-2 py-1 bg-red-500 text-white rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                @endif
+            </div>
+            <button type="button" id="add-language" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md text-sm">
+                {{ __('+ Add Programming Language') }}
+            </button>
             <x-input-error class="mt-2" :messages="$errors->get('programming_languages')" />
         </div>
 
         <div>
             <x-input-label for="projects" :value="__('Projects')" />
-            <x-text-input id="projects" name="projects" type="text" class="mt-1 block w-full" :value="old('projects', $user->projects)" autocomplete="projects" />
+            <div id="projects-container" class="space-y-2">
+                @if($user->projects)
+                    @php
+                        $projectsArray = explode(',', $user->projects);
+                    @endphp
+                    @foreach($projectsArray as $index => $project)
+                        <div class="project-input-group flex items-center">
+                            <x-text-input name="projects[]" type="text" class="mt-1 block w-full" value="{{ trim($project) }}" />
+                            <button type="button" class="remove-project ml-2 px-2 py-1 bg-red-500 text-white rounded-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="project-input-group flex items-center">
+                        <x-text-input name="projects[]" type="text" class="mt-1 block w-full" placeholder="e.g. Portfolio Website" />
+                        <button type="button" class="remove-project ml-2 px-2 py-1 bg-red-500 text-white rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                @endif
+            </div>
+            <button type="button" id="add-project" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md text-sm">
+                {{ __('+ Add Project') }}
+            </button>
             <x-input-error class="mt-2" :messages="$errors->get('projects')" />
         </div>
 
         <div>
             <x-input-label for="certifications" :value="__('Certifications')" />
-            <x-text-input id="certifications" name="certifications" type="text" class="mt-1 block w-full" :value="old('certifications', $user->certifications)" autocomplete="certifications" />
+            <div id="certifications-container" class="space-y-2">
+                @if($user->certifications)
+                    @php
+                        $certificationsArray = explode(',', $user->certifications);
+                    @endphp
+                    @foreach($certificationsArray as $index => $certification)
+                        <div class="certification-input-group flex items-center">
+                            <x-text-input name="certifications[]" type="text" class="mt-1 block w-full" value="{{ trim($certification) }}" />
+                            <button type="button" class="remove-certification ml-2 px-2 py-1 bg-red-500 text-white rounded-md">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                    @endforeach
+                @else
+                    <div class="certification-input-group flex items-center">
+                        <x-text-input name="certifications[]" type="text" class="mt-1 block w-full" placeholder="e.g. AWS Certified Developer" />
+                        <button type="button" class="remove-certification ml-2 px-2 py-1 bg-red-500 text-white rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                @endif
+            </div>
+            <button type="button" id="add-certification" class="mt-2 px-3 py-1 bg-blue-500 text-white rounded-md text-sm">
+                {{ __('+ Add Certification') }}
+            </button>
             <x-input-error class="mt-2" :messages="$errors->get('certifications')" />
         </div>
-
         <div>
             <x-input-label for="github_url" :value="__('GitHub URL')" />
             <x-text-input id="github_url" name="github_url" type="text" class="mt-1 block w-full" :value="old('github_url', $user->github_url)" autocomplete="github_url" />
@@ -80,6 +191,11 @@
         <div>
             <x-input-label for="image" :value="__('Profile Image')" />
             <input id="image" name="image" type="file" class="mt-1 block w-full" autocomplete="image" />
+            @if($user->image)
+                <div class="mt-2">
+                    <img src="{{ asset('storage/' . $user->image) }}" alt="Current Profile Image" class="w-20 h-20 rounded-full object-cover border-2 border-gray-200" />
+                </div>
+            @endif
             <x-input-error class="mt-2" :messages="$errors->get('image')" />
         </div>
 
@@ -92,6 +208,11 @@
         <div>
             <x-input-label for="banner" :value="__('Banner')" />
             <input id="banner" name="banner" type="file" class="mt-1 block w-full" autocomplete="banner" />
+            @if($user->banner)
+                <div class="mt-2">
+                    <img src="{{ asset('storage/' . $user->banner) }}" alt="Current Banner" class="w-full h-24 object-cover rounded-md" />
+                </div>
+            @endif
             <x-input-error class="mt-2" :messages="$errors->get('banner')" />
         </div>
 
@@ -116,3 +237,226 @@
         </div>
     </form>
 </section>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Skills functionality
+        const container = document.getElementById('skills-container');
+        const addButton = document.getElementById('add-skill');
+
+        // Add new skill input
+        addButton.addEventListener('click', function() {
+            const newSkillGroup = document.createElement('div');
+            newSkillGroup.className = 'skill-input-group flex items-center mt-2';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'skills[]';
+            input.className = 'mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm';
+            input.placeholder = 'e.g. JavaScript';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'remove-skill ml-2 px-2 py-1 bg-red-500 text-white rounded-md';
+            removeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+
+            newSkillGroup.appendChild(input);
+            newSkillGroup.appendChild(removeButton);
+            container.appendChild(newSkillGroup);
+        });
+
+        // Remove skill input (using event delegation)
+        container.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-skill')) {
+                const skillGroup = e.target.closest('.skill-input-group');
+                // Only remove if there's more than one skill input
+                if (container.querySelectorAll('.skill-input-group').length > 1) {
+                    skillGroup.remove();
+                }
+            }
+        });
+
+        // Programming Languages functionality
+        const languagesContainer = document.getElementById('languages-container');
+        const addLanguageButton = document.getElementById('add-language');
+
+        // Add new programming language input
+        addLanguageButton.addEventListener('click', function() {
+            const newLanguageGroup = document.createElement('div');
+            newLanguageGroup.className = 'language-input-group flex items-center mt-2';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'programming_languages[]';
+            input.className = 'mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm';
+            input.placeholder = 'e.g. Python';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'remove-language ml-2 px-2 py-1 bg-red-500 text-white rounded-md';
+            removeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+
+            newLanguageGroup.appendChild(input);
+            newLanguageGroup.appendChild(removeButton);
+            languagesContainer.appendChild(newLanguageGroup);
+        });
+
+        // Remove programming language input (using event delegation)
+        languagesContainer.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-language')) {
+                const languageGroup = e.target.closest('.language-input-group');
+                // Only remove if there's more than one language input
+                if (languagesContainer.querySelectorAll('.language-input-group').length > 1) {
+                    languageGroup.remove();
+                }
+            }
+        });
+    });
+</script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Skills functionality
+        const container = document.getElementById('skills-container');
+        const addButton = document.getElementById('add-skill');
+
+        // Add new skill input
+        addButton.addEventListener('click', function() {
+            const newSkillGroup = document.createElement('div');
+            newSkillGroup.className = 'skill-input-group flex items-center mt-2';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'skills[]';
+            input.className = 'mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm';
+            input.placeholder = 'e.g. JavaScript';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'remove-skill ml-2 px-2 py-1 bg-red-500 text-white rounded-md';
+            removeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+
+            newSkillGroup.appendChild(input);
+            newSkillGroup.appendChild(removeButton);
+            container.appendChild(newSkillGroup);
+        });
+
+        // Remove skill input (using event delegation)
+        container.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-skill')) {
+                const skillGroup = e.target.closest('.skill-input-group');
+                // Only remove if there's more than one skill input
+                if (container.querySelectorAll('.skill-input-group').length > 1) {
+                    skillGroup.remove();
+                }
+            }
+        });
+
+        // Programming Languages functionality
+        const languagesContainer = document.getElementById('languages-container');
+        const addLanguageButton = document.getElementById('add-language');
+
+        // Add new programming language input
+        addLanguageButton.addEventListener('click', function() {
+            const newLanguageGroup = document.createElement('div');
+            newLanguageGroup.className = 'language-input-group flex items-center mt-2';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'programming_languages[]';
+            input.className = 'mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm';
+            input.placeholder = 'e.g. Python';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'remove-language ml-2 px-2 py-1 bg-red-500 text-white rounded-md';
+            removeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+
+            newLanguageGroup.appendChild(input);
+            newLanguageGroup.appendChild(removeButton);
+            languagesContainer.appendChild(newLanguageGroup);
+        });
+
+        // Remove programming language input (using event delegation)
+        languagesContainer.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-language')) {
+                const languageGroup = e.target.closest('.language-input-group');
+                // Only remove if there's more than one language input
+                if (languagesContainer.querySelectorAll('.language-input-group').length > 1) {
+                    languageGroup.remove();
+                }
+            }
+        });
+
+        // Projects functionality
+        const projectsContainer = document.getElementById('projects-container');
+        const addProjectButton = document.getElementById('add-project');
+
+        // Add new project input
+        addProjectButton.addEventListener('click', function() {
+            const newProjectGroup = document.createElement('div');
+            newProjectGroup.className = 'project-input-group flex items-center mt-2';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'projects[]';
+            input.className = 'mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm';
+            input.placeholder = 'e.g. Portfolio Website';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'remove-project ml-2 px-2 py-1 bg-red-500 text-white rounded-md';
+            removeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+
+            newProjectGroup.appendChild(input);
+            newProjectGroup.appendChild(removeButton);
+            projectsContainer.appendChild(newProjectGroup);
+        });
+
+        // Remove project input (using event delegation)
+        projectsContainer.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-project')) {
+                const projectGroup = e.target.closest('.project-input-group');
+                // Only remove if there's more than one project input
+                if (projectsContainer.querySelectorAll('.project-input-group').length > 1) {
+                    projectGroup.remove();
+                }
+            }
+        });
+
+        // Certifications functionality
+        const certificationsContainer = document.getElementById('certifications-container');
+        const addCertificationButton = document.getElementById('add-certification');
+
+        // Add new certification input
+        addCertificationButton.addEventListener('click', function() {
+            const newCertificationGroup = document.createElement('div');
+            newCertificationGroup.className = 'certification-input-group flex items-center mt-2';
+
+            const input = document.createElement('input');
+            input.type = 'text';
+            input.name = 'certifications[]';
+            input.className = 'mt-1 block w-full border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm';
+            input.placeholder = 'e.g. AWS Certified Developer';
+
+            const removeButton = document.createElement('button');
+            removeButton.type = 'button';
+            removeButton.className = 'remove-certification ml-2 px-2 py-1 bg-red-500 text-white rounded-md';
+            removeButton.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>';
+
+            newCertificationGroup.appendChild(input);
+            newCertificationGroup.appendChild(removeButton);
+            certificationsContainer.appendChild(newCertificationGroup);
+        });
+
+        // Remove certification input (using event delegation)
+        certificationsContainer.addEventListener('click', function(e) {
+            if (e.target.closest('.remove-certification')) {
+                const certificationGroup = e.target.closest('.certification-input-group');
+                // Only remove if there's more than one certification input
+                if (certificationsContainer.querySelectorAll('.certification-input-group').length > 1) {
+                    certificationGroup.remove();
+                }
+            }
+        });
+    });
+</script>

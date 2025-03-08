@@ -46,16 +46,56 @@
                             </a>
                         </div>
                         <p class="text-gray-600 text-sm mt-1">{{ $user->industry }}</p>
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{{$user->skills}}</span>
 
-                        </div>
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{{$user->programming_languages}}</span>
+                        <!-- Skills Section -->
+                        @if($user->skills)
+                            <div class="mt-4">
+                                <h3 class="text-sm font-semibold text-gray-700">Skills</h3>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach(explode(',', $user->skills) as $skill)
+                                        <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{{ trim($skill) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
 
-                        </div>
-                        <p class="text-gray-500 text-sm mt-2">{{ $user->certifications }}</p>
-                        <p class="text-gray-500 text-sm mt-2">{{ $user->bio }}</p>
+                        <!-- Programming Languages Section -->
+                        @if($user->programming_languages)
+                            <div class="mt-4">
+                                <h3 class="text-sm font-semibold text-gray-700">Programming Languages</h3>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach(explode(',', $user->programming_languages) as $language)
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">{{ trim($language) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Projects Section -->
+                        @if($user->projects)
+                            <div class="mt-4">
+                                <h3 class="text-sm font-semibold text-gray-700">Projects</h3>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach(explode(',', $user->projects) as $project)
+                                        <span class="px-2 py-1 bg-purple-100 text-purple-800 rounded-full text-xs">{{ trim($project) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Certifications Section -->
+                        @if($user->certifications)
+                            <div class="mt-4">
+                                <h3 class="text-sm font-semibold text-gray-700">Certifications</h3>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach(explode(',', $user->certifications) as $certification)
+                                        <span class="px-2 py-1 bg-yellow-100 text-yellow-800 rounded-full text-xs">{{ trim($certification) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
+                        <p class="text-gray-500 text-sm mt-4">{{ $user->bio }}</p>
                     </div>
                 </div>
             </div>

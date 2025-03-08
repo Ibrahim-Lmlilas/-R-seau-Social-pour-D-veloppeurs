@@ -95,7 +95,7 @@
                             </div>
                         @endif
 
-                        <p class="text-gray-500 text-sm mt-4">{{ $user->bio }}</p>
+                        <div class="text-gray-500 text-sm mt-4">{!! $user->bio !!}</div>
                     </div>
                 </div>
             </div>

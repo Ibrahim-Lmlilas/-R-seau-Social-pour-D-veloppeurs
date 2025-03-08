@@ -53,7 +53,7 @@
 
                         </div>
                         <p class="text-gray-500 text-sm mt-2">{{ $user->certifications }}</p>
-                        <p class="text-gray-500 text-sm mt-2">{{ $user->bio }}</p>
+                        <div class="text-gray-500 text-sm mt-2">{!! $user->bio !!}</div>
 
 
                         <div class="mt-4 pt-4 border-t">

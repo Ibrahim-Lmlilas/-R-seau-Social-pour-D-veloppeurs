@@ -217,29 +217,66 @@
         </div>
 
         <div>
-            <x-input-label for="bio" :value="__('Bio')" />
-            <x-text-input id="bio" name="bio" type="text" class="mt-1 block w-full" :value="old('bio', $user->bio)" autocomplete="bio" />
-            <x-input-error class="mt-2" :messages="$errors->get('bio')" />
-        </div>
+            <!-- Add Quill stylesheet in the form section -->
+            <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <div>
+                <x-input-label for="bio" :value="__('Bio')" />
+                <!-- Replace the regular text input with Quill editor -->
+                <input type="hidden" id="bio-input" name="bio" value="{{ old('bio', $user->bio) }}">
+                <div id="bio-editor" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm">
+                    {!! old('bio', $user->bio) !!}
+                </div>
+                <x-input-error class="mt-2" :messages="$errors->get('bio')" />
+            </div>
 
-            @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600 dark:text-gray-400"
-                >{{ __('Saved.') }}</p>
-            @endif
+            <div class="flex items-center gap-4">
+                <x-primary-button>{{ __('Save') }}</x-primary-button>
+
+                @if (session('status') === 'profile-updated')
+                    <p
+                        x-data="{ show: true }"
+                        x-show="show"
+                        x-transition
+                        x-init="setTimeout(() => show = false, 2000)"
+                        class="text-sm text-gray-600 dark:text-gray-400"
+                    >{{ __('Saved.') }}</p>
+                @endif
+            </div>
         </div>
     </form>
 </section>
 
+<!-- Add Quill script at the end of the file -->
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Quill editor for bio
+        const quill = new Quill('#bio-editor', {
+            theme: 'snow',
+            placeholder: 'Write something about yourself...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                    [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    ['link'],
+                    ['clean']
+                ]
+            }
+        });
+
+        // Update hidden input with Quill content before form submission
+        const form = document.querySelector('form[action="{{ route("profile.update") }}"]');
+        const bioInput = document.getElementById('bio-input');
+
+        form.addEventListener('submit', function() {
+            bioInput.value = quill.root.innerHTML;
+        });
+
         // Skills functionality
         const container = document.getElementById('skills-container');
         const addButton = document.getElementById('add-skill');

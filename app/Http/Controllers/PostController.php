@@ -22,7 +22,7 @@ class PostController extends Controller
     public function index(): View
     {
         $user = Auth::user();
-        $posts = Post::orderBy('created_at', 'desc')->paginate(10);
+        $posts = Post::orderBy('created_at', 'desc')->paginate(5);
         return view('dashboard', compact('posts', 'user'));
     }
 
@@ -112,5 +112,5 @@ class PostController extends Controller
         return view('posts.my_posts', compact('posts', 'user', 'postCount')); // Pass $user and $postCount to the view
     }
 
-    
+
 }

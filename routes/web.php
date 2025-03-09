@@ -8,17 +8,26 @@ use App\Http\Controllers\LikeController;
 use App\Models\Post;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ConnectionController;
+use App\Http\Controllers\JobController;
 use App\Http\Controllers\NotificationController;
+use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-use Illuminate\Support\Facades\Auth;
+Route::get('/dashboard', function () {
+    $user = Auth::user();
 
-Route::get('/dashboard', [PostController::class, 'index'])->middleware(['auth', 'verified'])->name('dashboard');
+    $posts = Post::with('user')->latest()->paginate(5);
 
+    $jobController = app(JobController::class);
+    $jobs = $jobController->getRecentJobs();
 
+    return view('dashboard', compact('user', 'posts', 'jobs'));
+})->middleware(['auth', 'verified'])->name('dashboard');
+
+Route::resource('jobs', JobController::class)->middleware(['auth']);
 
 
 Route::middleware('auth')->group(function () {
@@ -78,4 +87,7 @@ Route::middleware(['auth'])->group(function () {
 
 
 require __DIR__ . '/auth.php';
+
+
+
 

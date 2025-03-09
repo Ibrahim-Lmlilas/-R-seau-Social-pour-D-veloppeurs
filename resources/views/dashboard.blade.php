@@ -284,8 +284,8 @@
                                     </div>
                                 </form>
 
-                                <!-- Replace the existing comment display section -->
-                                <div class="comments-container mt-4 space-y-4">
+                                <!-- Modifier cette section pour cacher les commentaires par défaut -->
+                                <div class="comments-container mt-4 space-y-4" style="display: none;">
                                     @foreach($post->comments()->with('user')->latest()->get() as $comment)
                                         <div class="flex items-start space-x-3 comment-item" id="comment-{{ $comment->id }}">
                                             <img src="{{ asset('storage/' . $comment->user->image) }}" alt="User" class="w-8 h-8 rounded-full"/>
@@ -318,17 +318,55 @@
                     </div>
 
  @endforeach
+
+                <!-- Use proper pagination -->
+                {{ $posts->links() }}
+
                 </div>
 
 
-                {{ $posts->links() }}
+
+
+
+
+
+
 
                 <!-- Right Sidebar -->
                 <div class="space-y-6">
                     <!-- Job Recommendations -->
+                    <div class="bg-white rounded-xl shadow-sm p-4">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-lg">Job Offers</h3>
+                            <a href="{{ route('jobs.create') }}" class="text-blue-500 hover:text-blue-700 text-sm">Post a job</a>
+                        </div>
 
-
-                    <!-- Suggested Connections -->
+                        @if(isset($jobs) && count($jobs) > 0)
+                            <div class="space-y-4">
+                                @foreach($jobs as $job)
+                                <div class="border-b pb-3">
+                                    <h4 class="font-medium text-gray-900">{{ $job->title }}</h4>
+                                    <p class="text-sm text-gray-600">{{ $job->company }}</p>
+                                    <div class="flex items-center text-xs text-gray-500 mt-1">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                        </svg>
+                                        {{ $job->location }}
+                                    </div>
+                                    <div class="mt-2">
+                                        <a href="{{ route('jobs.show', $job->id) }}" class="text-sm text-blue-600 hover:text-blue-800">View details</a>
+                                    </div>
+                                </div>
+                                @endforeach
+                            </div>
+                            <div class="mt-4 text-center">
+                                <a href="{{ route('jobs.index') }}" class="text-blue-500 hover:text-blue-700 text-sm">View all jobs</a>
+                            </div>
+                        @else
+                            <p class="text-gray-500 text-sm">No job offers available at the moment.</p>
+                        @endif
+                    </div>
 
                 </div>
             </body>
@@ -600,6 +638,23 @@
                                 }
                             })
                             .catch(error => console.error('Error:', error));
+                        });
+                    });
+                });
+                // Ajouter ce code à la fin de votre section script
+                document.addEventListener('DOMContentLoaded', function() {
+                    // Gestionnaire pour les boutons de commentaires
+                    document.querySelectorAll('.toggle-comments').forEach(button => {
+                        button.addEventListener('click', function() {
+                            const postId = this.dataset.postId;
+                            const commentsContainer = this.closest('.bg-white').querySelector('.comments-container');
+
+                            // Basculer l'affichage des commentaires
+                            if (commentsContainer.style.display === 'none' || commentsContainer.style.display === '') {
+                                commentsContainer.style.display = 'block';
+                            } else {
+                                commentsContainer.style.display = 'none';
+                            }
                         });
                     });
                 });

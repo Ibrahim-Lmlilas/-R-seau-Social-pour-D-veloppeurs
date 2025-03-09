@@ -211,14 +211,22 @@
             <script>
                 document.getElementById('searchInput').addEventListener('keyup', function() {
                 const searchValue = this.value.toLowerCase();
-                const posts = document.querySelectorAll('.user');
+                const users = document.querySelectorAll('.user .name');
 
-                posts.forEach(post => {
-                    const postContent = post.querySelector('.name ').textContent.toLowerCase();
-                    const userName = post.querySelector('h4').textContent.toLowerCase();
-                    const hashtags = post.querySelector('p.text-blue-800')?.textContent.toLowerCase()  '';
+                users.forEach(userDiv => {
+                    const userName = userDiv.querySelector('h4')?.textContent.toLowerCase() || '';
+                    const userIndustry = userDiv.querySelector('p')?.textContent.toLowerCase() || '';
+                    const userSkills = Array.from(userDiv.querySelectorAll('.bg-gray-100')).map(skill =>
+                        skill.textContent.toLowerCase()).join(' ');
 
-
+                    // Check if any of the user data contains the search value
+                    if (userName.includes(searchValue) ||
+                        userIndustry.includes(searchValue) ||
+                        userSkills.includes(searchValue)) {
+                        userDiv.style.display = '';
+                    } else {
+                        userDiv.style.display = 'none';
+                    }
                 });
             });
             </script>

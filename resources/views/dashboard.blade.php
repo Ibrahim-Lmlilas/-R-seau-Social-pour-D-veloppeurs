@@ -220,10 +220,10 @@
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                                         </svg>
                                     </button>
-                                    <span class="likes-count  text-gray-500" data-post-id="{{ $post->id }}">{{ $post->likes()->count() }}</span>
-                                    <button class="flex items-center space-x-2  text-gray-500  hover:text-blue-500">
-                                        <svg class="w-5 h-5  text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z  "/>
+                                    <span class="likes-count text-gray-500" data-post-id="{{ $post->id }}">{{ $post->likes()->count() }}</span>
+                                    <button class="toggle-comments flex items-center space-x-2 text-gray-500 hover:text-blue-500" data-post-id="{{ $post->id }}">
+                                        <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z"/>
                                         </svg>
                                         <span>{{$post->comments->count()}}</span>
                                     </button>
@@ -388,18 +388,59 @@
                             // Add the new comment to the list
                             const commentsContainer = this.nextElementSibling;
                             const commentHtml = `
-                                <div class="flex items-start space-x-3">
-                                    <img src="${data.comment.user.image}" alt="User" class="w-8 h-8 rounded-full"/>
+                                <div class="flex items-start space-x-3 comment-item" id="comment-${data.comment.id}">
+                                    <img src="{{ asset('storage/') }}/${data.comment.user.image}" alt="User" class="w-8 h-8 rounded-full"/>
                                     <div class="flex-grow bg-gray-50 rounded-lg p-3">
                                         <div class="flex items-center justify-between">
-                                            <h4 class="font-semibold">${data.comment.user.name}</h4>
-                                            <span class="text-xs text-gray-500">Just now</span>
+                                            <div>
+                                                <h4 class="font-semibold">${data.comment.user.name}</h4>
+                                                <span class="text-xs text-gray-500">Just now</span>
+                                            </div>
+                                            <button
+                                                class="delete-comment text-gray-400 hover:text-red-500"
+                                                data-comment-id="${data.comment.id}"
+                                            >
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
                                         </div>
                                         <p class="text-gray-700 mt-1">${data.comment.content}</p>
                                     </div>
                                 </div>
                             `;
                             commentsContainer.insertAdjacentHTML('afterbegin', commentHtml);
+
+                            // Add event listener to the new delete button
+                            const newDeleteButton = commentsContainer.querySelector(`#comment-${data.comment.id} .delete-comment`);
+                            if (newDeleteButton) {
+                                newDeleteButton.addEventListener('click', function() {
+                                    if (confirm('Are you sure you want to delete this comment?')) {
+                                        const commentId = this.dataset.commentId;
+
+                                        fetch(`/comments/${commentId}`, {
+                                            method: 'DELETE',
+                                            headers: {
+                                                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                                                'Accept': 'application/json',
+                                                'Content-Type': 'application/json'
+                                            }
+                                        })
+                                        .then(response => response.json())
+                                        .then(data => {
+                                            if (data.success) {
+                                                document.getElementById(`comment-${commentId}`).remove();
+
+                                                // Update comment count
+                                                const commentCountElement = this.closest('.bg-white').querySelector('.flex.items-center.space-x-4 span:last-child');
+                                                const currentCount = parseInt(commentCountElement.textContent);
+                                                commentCountElement.textContent = currentCount - 1;
+                                            }
+                                        })
+                                        .catch(error => console.error('Error:', error));
+                                    }
+                                });
+                            }
 
                             textarea.value = '';
                         })

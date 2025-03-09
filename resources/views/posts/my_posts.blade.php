@@ -44,14 +44,28 @@
                         </div>
                         <p class="text-gray-600 text-sm mt-1">{{ $user->industry }}</p>
 
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{{$user->skills}}</span>
-
+                        @if($user->skills)
+                        <div class="mt-4">
+                            <h3 class="text-sm font-semibold text-gray-700">Skills</h3>
+                            <div class="flex flex-wrap gap-2 mt-1">
+                                @foreach(explode(',', $user->skills) as $skill)
+                                    <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{{ trim($skill) }}</span>
+                                @endforeach
+                            </div>
                         </div>
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            <span class="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs">{{$user->programming_languages}}</span>
+                    @endif
 
-                        </div>
+                    @if($user->programming_languages)
+                            <div class="mt-4">
+                                <h3 class="text-sm font-semibold text-gray-700">Programming Languages</h3>
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach(explode(',', $user->programming_languages) as $language)
+                                        <span class="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs">{{ trim($language) }}</span>
+                                    @endforeach
+                                </div>
+                            </div>
+                        @endif
+
                         <p class="text-gray-500 text-sm mt-2">{{ $user->certifications }}</p>
                         <div class="text-gray-500 text-sm mt-2">{!! $user->bio !!}</div>
 
